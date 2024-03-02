@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'erp'
 ]
 
 MIDDLEWARE = [
@@ -73,10 +74,15 @@ WSGI_APPLICATION = 'dining_booking_erp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# settings.py
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'dining_booking_erp',      # Replace 'your_database_name' with your actual database name
+        'USER': 'root',     # Replace 'your_mysql_username' with your MySQL username
+        'PASSWORD': 'root', # Replace 'your_mysql_password' with your MySQL password
+        'HOST': 'localhost',               # Replace 'localhost' with your MySQL host if it's not running locally
+        'PORT': '3306',                    # Replace '3306' with your MySQL port if it's different
     }
 }
 
