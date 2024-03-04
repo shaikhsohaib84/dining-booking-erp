@@ -1,8 +1,8 @@
 from django.urls import path
 from .views import (
-        TableList, TableInsert, TableDelete, 
+        TableList, TableInsert, TableDelete, TableUpdate,
         AddMenu, ListMenu, UpdateMenu, 
-        CreateOrder,
+        ListCreateOrder, CancelOrder
     )
 
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     path('get-table/', TableList.as_view()),
     path('add-table/', TableInsert.as_view()),
     path('delete-table/<int:pk>/', TableDelete.as_view()),
+    path('update-table/<int:pk>/', TableUpdate.as_view()),
 
     # menu urls
     path('add-menu-item/' , AddMenu.as_view()),
@@ -17,6 +18,7 @@ urlpatterns = [
     path('update-menu-item/<int:pk>/', UpdateMenu.as_view()),
 
     # order urls
-    path('create-order/', CreateOrder.as_view()),
-    path('list-orders/', CreateOrder.as_view()),
+    path('create-order/', ListCreateOrder.as_view()),
+    path('list-orders/', ListCreateOrder.as_view()),
+    path('cancel-order/<int:pk>/', CancelOrder.as_view())
 ]
