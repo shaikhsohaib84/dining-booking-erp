@@ -3,6 +3,7 @@ import { UserOutlined, HomeOutlined, TableOutlined, MenuOutlined, OrderedListOut
 import { Flex, Layout, Menu, theme } from 'antd';
 import { Typography } from 'antd';
 import { APP_NAME } from '../utils/constant';
+import "./Components.css"
 const { Title } = Typography;
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -26,20 +27,13 @@ const items = [
 
 const CustomMenu = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
+  const { token: { colorBgContainer } } = theme.useToken();
+
   return (
-    <Layout
-      style={{
-        minHeight: '100vh',
-      }}
-    >
+    <Layout className='min-full-height'>
       <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
         <Flex align='center' justify='center'>
-            <img src={"logo.svg"} style={{
-                maxWidth: '50%',                
-                }}alt="logo"/>
+            <img src={"logo.svg"} className='half-width' alt="logo"/>
         </Flex>
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
       </Sider>
@@ -48,24 +42,13 @@ const CustomMenu = ({ children }) => {
           style={{
             padding: '0px 16px',
             background: colorBgContainer,
-          }}
-        >
-            <Flex>
-                <Title level={2}>{APP_NAME}</Title>
-            </Flex>
+          }}>
+            <Flex><Title level={2}>{APP_NAME}</Title></Flex>
         </Header>
-        <Content
-          style={{
-            margin: '10px 16px',
-          }}
-        >
+        <Content style={{ margin: '10px 16px' }}>
           {children}
         </Content>
-        <Footer
-          style={{
-            textAlign: 'center',
-          }}
-        >
+        <Footer className='txt-align-center'>
           {APP_NAME} ©{new Date().getFullYear()} Created by Allah
         </Footer>
       </Layout>
