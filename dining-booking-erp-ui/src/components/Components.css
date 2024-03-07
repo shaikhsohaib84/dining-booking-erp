@@ -2,9 +2,9 @@
     display: flex;
 }
 
-.full-height {
-    height: 100vh;
-}
+/* .full-height {
+    height: 100%;
+} */
 
 .half-width {
     max-width: 50%;
@@ -16,4 +16,8 @@
 
 .txt-align-center {
     text-align: center;
+}
+
+.width-300 {
+    width: 300;
 }

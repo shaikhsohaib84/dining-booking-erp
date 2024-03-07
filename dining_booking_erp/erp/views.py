@@ -108,7 +108,7 @@ class ListCreateBill(ListCreateAPIView):
     def create(self, request):
         sub_total        = 0
         table_token      = request.data.get('table_token', None)
-        discount_percent = request.data.get('discount_percent', 0)
+        discounted_amt = request.data.get('discounted_amt', 0)
         payment_mode     = request.data.get('payment_mode', 'cash')
 
         if not table_token: return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -118,9 +118,9 @@ class ListCreateBill(ListCreateAPIView):
         for curr_order_item in order_items.data:
             sub_total += (curr_order_item['menu']['rate'] * curr_order_item['qty'])
         
-        self.__bill_amount = sub_total - (discount_percent/100) * sub_total
+        self.__bill_amount = sub_total - discounted_amt
 
         with transaction.atomic():
-            Billing.objects.create(table_token=table_token, payment_mode=payment_mode, is_paid=True, discount_percent=discount_percent, amount=self.__bill_amount)
+            Billing.objects.create(table_token=table_token, payment_mode=payment_mode, is_paid=True, discounted_amt=discounted_amt, bill_amount=self.__bill_amount)
             Table.objects.filter(table_token=table_token).update(table_token=None, start_at=None, is_occupied=False)
         return Response(status=status.HTTP_200_OK)

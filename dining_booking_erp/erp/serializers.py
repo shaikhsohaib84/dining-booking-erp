@@ -27,4 +27,4 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class BillingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Billing
-        fields = ['id', 'table_token', 'payment_mode', 'is_paid', 'discount_percent']
+        fields = ['id', 'table_token', 'payment_mode', 'is_paid', 'discounted_amt']
