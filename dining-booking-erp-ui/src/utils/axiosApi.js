@@ -12,14 +12,14 @@ export const GET = (url, config=[]) => {
     return axios.get(`${url}`, ...config);
 }
 
-const POST = (url, data, config=[]) => {
+export const POST = (url, data, config=[]) => {
     return axios.post(url, data, ...config);
 }
 
-const PUT = (url, data, config=[]) => {
+export const PUT = (url, data, config=[]) => {
     return axios.put(url, data, ...config);
 }
 
-const DELETE = (url, config=[]) => {
+export const DELETE = (url, config=[]) => {
     return axios.delete(url, ...config);
 }
