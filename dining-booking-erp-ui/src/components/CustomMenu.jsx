@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { UserOutlined, HomeOutlined, TableOutlined, MenuOutlined, OrderedListOutlined } from '@ant-design/icons';
-import { Flex, Layout, Menu, theme } from 'antd';
-import { Typography } from 'antd';
+import { useNavigate } from "react-router-dom";
+import { Flex, Layout, Menu, theme, Typography } from 'antd';
+import { UserOutlined, HomeOutlined, TableOutlined, MenuOutlined, OrderedListOutlined, FormOutlined } from '@ant-design/icons';
 import { APP_NAME } from '../utils/constant';
 import "./Components.css"
-const { Title } = Typography;
 
+const { Title } = Typography;
 const { Header, Content, Footer, Sider } = Layout;
 
 function getItem(label, key, icon, children) {
@@ -18,16 +18,29 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem('Home',  '1', <HomeOutlined />),
-  getItem('Table', '2', <TableOutlined />),
-  getItem('Menu',  '3', <MenuOutlined />),
-  getItem('Orders','4', <OrderedListOutlined />),
-  getItem('Staff', '5', <UserOutlined />),
+  getItem('Home',  'home', <HomeOutlined />),
+  getItem('Table', 'table', <TableOutlined />,[
+    getItem('More',  'tableSetting', <FormOutlined />),
+  ]),
+  getItem('Menu',  'menu', <MenuOutlined />),
+  getItem('Orders','orders', <OrderedListOutlined />),
+  getItem('Staff', 'staff', <UserOutlined />),
 ];
 
 const CustomMenu = ({ children }) => {
+  let navigate = useNavigate(); 
+
   const [collapsed, setCollapsed] = useState(false);
   const { token: { colorBgContainer } } = theme.useToken();
+  
+  const menu_switch = {
+    'home': () => navigate('/'),
+    'tableSetting': () => navigate('/table-setting'),
+  }
+
+  const handleMenuClick = ({key}) => {
+    menu_switch[key]()
+  }
 
   return (
     <Layout className='min-full-height'>
@@ -35,7 +48,7 @@ const CustomMenu = ({ children }) => {
         <Flex align='center' justify='center'>
             <img src={"logo.svg"} className='half-width' alt="logo"/>
         </Flex>
-        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
+        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} onSelect={handleMenuClick}/>
       </Sider>
       <Layout>
         <Header
@@ -45,7 +58,12 @@ const CustomMenu = ({ children }) => {
           }}>
             <Flex><Title level={2}>{APP_NAME}</Title></Flex>
         </Header>
-        <Content style={{ margin: '10px 16px' }}>
+        <Content 
+          style={{
+            margin: '10px 16px',
+            overflow: 'initial',
+          }}
+        >
           {children}
         </Content>
         <Footer className='txt-align-center'>

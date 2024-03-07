@@ -1,11 +1,19 @@
 .green-color {
-    background-color: #9FBB73;
+    background-color: #416D19;
 }
 
 .red-color {
-    background-color: #F05941;
+    background-color: #7D0A0A;
 }
 
 .full-height {
     height: 100%;
+}
+
+.cursor-ptr {
+    cursor: pointer;
+}
+
+.white-color {
+    color: #fff;
 }

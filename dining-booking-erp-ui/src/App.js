@@ -5,7 +5,8 @@ import Layout from './components/Layout';
 
 const LoadingFallback = () => <div>Loading...</div>;
 
-const Home = lazy(() => import('./pages/Home'));
+const Home         = lazy(() => import('./pages/Home'));
+const TableSetting = lazy(() => import('./pages/Table'));
 
 export default function App() {
   return (
@@ -13,8 +14,8 @@ export default function App() {
       <Layout>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
-            <Route path="/" element={<Home/>}>
-            </Route>  
+            <Route path="/" element={<Home/>}/>
+            <Route path="/table-setting" element={<TableSetting />}/>
           </Routes>
         </Suspense>
       </Layout>

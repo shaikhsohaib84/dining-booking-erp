@@ -30,7 +30,7 @@ class Table(models.Model):
     
     class Meta:
         db_table = "table"
-        # ordering = ["id"]
+        ordering = ["id"]
 
 class Menu(models.Model):
     id         = models.BigAutoField(primary_key=True)
@@ -64,3 +64,4 @@ class Billing(models.Model):
 
     class Meta:
         db_table = "billing"
+        ordering = ["id"]

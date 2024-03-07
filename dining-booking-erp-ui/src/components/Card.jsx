@@ -1,7 +1,7 @@
-import React, { Children } from 'react';
+import React from 'react';
 import { Card as AntCard } from 'antd';
 
-const Card = ({
+export const Card = ({
     title=null,
     ChildComponent,
     className,
@@ -15,5 +15,3 @@ const Card = ({
       {ChildComponent}
   </AntCard>
 );
-
-export default Card;
