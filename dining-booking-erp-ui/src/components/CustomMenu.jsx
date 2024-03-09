@@ -48,7 +48,7 @@ const CustomMenu = ({ children }) => {
         <Flex align='center' justify='center'>
             <img src={"logo.svg"} className='half-width' alt="logo"/>
         </Flex>
-        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} onSelect={handleMenuClick}/>
+        <Menu theme="dark" defaultSelectedKeys={['home']} mode="inline" items={items} onSelect={handleMenuClick}/>
       </Sider>
       <Layout>
         <Header
