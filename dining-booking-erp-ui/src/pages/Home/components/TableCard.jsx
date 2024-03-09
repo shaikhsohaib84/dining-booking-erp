@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Col, Flex, Row, Spin } from 'antd';
-import { DollarOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { DollarOutlined, EditOutlined, PlusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Card } from "../../../components/Card.jsx"
 import { getTableAPI } from "../../../utils/apiCall";
 import { localDateTime } from "../../../utils/common";
@@ -11,7 +11,9 @@ import "../index.css";
 const TableCard = () => {
     const dipatch = useDispatch();
     const modeState = useSelector((state) => state?.models)
+    const genericState = useSelector((state) => state?.generic)
     const { tableData=[] } = modeState;
+    const { currPath ='/' } = genericState;
     
     const [isLoading, setIsLoading] = useState(false);
 
@@ -24,7 +26,6 @@ const TableCard = () => {
                     ins['tableId'] = idx + 1;
                     return ins;
                 })
-                console.log('tableData', tableData);
                 dipatch(setModel('tableData', tableData));
             }
             setIsLoading(false);
@@ -49,12 +50,17 @@ const TableCard = () => {
                                         </Flex>
                                     }
                                     actions={
-                                        ins.is_occupied ? ([
+                                        currPath !== 'tableSetting' ? 
+                                        (ins.is_occupied ? ([
                                                 <DollarOutlined key="pay-bill" />,
                                                 <EditOutlined   key="edit-order" />,
                                             ]) : ([
                                                 <PlusCircleOutlined key="add-order" />
-                                            ])
+                                            ])) : (
+                                                ([
+                                                    <DeleteOutlined key="edit-order" />
+                                                ])
+                                            )
                                     }
                                 />
                             </Col>

@@ -10,6 +10,8 @@ import { Alert } from '../../components/Alert';
 import { addTableAPI } from '../../utils/apiCall';
 import { ERROR, ERROR_MESSAGE } from '../../utils/constant';
 
+import "./index.css"
+
 const TableSetting = () => {
     const dispatch = useDispatch()
     const modelState = useSelector((state) => state?.models)
@@ -36,7 +38,7 @@ const TableSetting = () => {
 
     return (
         <Spin spinning={isLoading}>
-            <div style={{ margin: '4px' }} className="d-flex justify-content-end">
+            <div className="d-flex justify-content-end margin-4">
                 {
                     showAlert && (
                         <Alert 
@@ -56,9 +58,7 @@ const TableSetting = () => {
                     disabled={isAddTableDisabled}
                 />
             </div>
-            <div>
-                <TableCard />
-            </div>
+            <TableCard />
         </Spin>
     )
 }
