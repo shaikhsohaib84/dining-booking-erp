@@ -1,12 +1,8 @@
-import { useEffect } from "react";
+import TableCard from "./components/TableCard";
 
 const Home = () => {
-    useEffect(() => {
-        console.log('Indide')
-    }, [])
-
     return (
-        <>Home Page</>
+        <TableCard />
     )
 }
 

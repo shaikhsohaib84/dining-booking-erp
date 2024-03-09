@@ -30,7 +30,7 @@ class Table(models.Model):
     
     class Meta:
         db_table = "table"
-        # ordering = ["id"]
+        ordering = ["id"]
 
 class Menu(models.Model):
     id         = models.BigAutoField(primary_key=True)
@@ -59,8 +59,9 @@ class Billing(models.Model):
     table_token      = models.TextField(unique=True, blank=False, null=False)
     payment_mode     = models.CharField(max_length=20, choices=PAYMENT_TYPES, default="online", blank=False, null=False)
     is_paid          = models.BooleanField(default=False, null=False, blank=False)
-    discount_percent = models.FloatField(default=0, null=False, blank=False)
-    amount           = models.FloatField(default=0, null=False, blank=False)
+    discounted_amt   = models.FloatField(default=0, null=False, blank=False)
+    bill_amount      = models.FloatField(default=0, null=False, blank=False)
 
     class Meta:
         db_table = "billing"
+        ordering = ["id"]

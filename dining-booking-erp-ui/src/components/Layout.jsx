@@ -1,12 +1,8 @@
-import { Flex } from "antd";
 import CustomMenu from "./CustomMenu";
 
 const Layout = ({ children }) => {
     return (
-        <div style={{
-            display: 'flex',
-            height: '100vh'
-        }}>
+        <div className="d-flex full-height">
           <CustomMenu children={children}/>
         </div>
       );
