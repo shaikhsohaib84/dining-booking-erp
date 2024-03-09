@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Col, Flex, Row, Spin } from 'antd';
 import { DollarOutlined, EditOutlined, PlusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Card } from "../../../components/Card.jsx"
-import { getTableAPI } from "../../../utils/apiCall";
+import { deleteTableById, getTableAPI } from "../../../utils/apiCall";
 import { localDateTime } from "../../../utils/common";
 import { setModel } from "../../../redux/action/modelAction.js"
 import "../index.css";
@@ -33,6 +33,11 @@ const TableCard = () => {
         getTable();
     }, [])
 
+    const handleDeleteTableById = async (tableDetail) => {
+        const tableResp = await deleteTableById(tableDetail?.id)
+        console.log(tableResp);
+    }
+
     return (
         <Spin spinning={isLoading}>
             {
@@ -51,14 +56,16 @@ const TableCard = () => {
                                     }
                                     actions={
                                         currPath !== 'tableSetting' ? 
-                                        (ins.is_occupied ? ([
-                                                <DollarOutlined key="pay-bill" />,
-                                                <EditOutlined   key="edit-order" />,
-                                            ]) : ([
-                                                <PlusCircleOutlined key="add-order" />
-                                            ])) : (
+                                            (ins.is_occupied ? ([
+                                                    <DollarOutlined key="pay-bill" />,
+                                                    <EditOutlined   key="edit-order" />,
+                                                ]) : ([
+                                                    <PlusCircleOutlined key="add-order" />
+                                            ])) 
+                                            : 
+                                            (
                                                 ([
-                                                    <DeleteOutlined key="edit-order" />
+                                                    <DeleteOutlined key="edit-order" onClick={() => {handleDeleteTableById(ins)}}/>
                                                 ])
                                             )
                                     }
