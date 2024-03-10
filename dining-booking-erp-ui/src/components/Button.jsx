@@ -1,7 +1,7 @@
 import { Button as AntButton } from 'antd';
 
 const Button = ({
-    name='click me',
+    name='',
     size='small',
     type='primary',
     shape='',

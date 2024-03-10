@@ -1,11 +1,11 @@
 import CustomMenu from "./CustomMenu";
 
-const Layout = ({ children }) => {
+const LayoutMine = ({ children }) => {
     return (
-        <div className="d-flex full-height">
+        <div className="d-flex">
           <CustomMenu children={children}/>
         </div>
       );
 }
 
-export default Layout;
+export default LayoutMine;

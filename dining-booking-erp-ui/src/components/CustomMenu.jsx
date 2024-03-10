@@ -48,8 +48,20 @@ const CustomMenu = ({ children }) => {
   }
 
   return (
-    <Layout className='min-full-height'>
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+    <Layout>
+      <Sider 
+        collapsible 
+        collapsed={collapsed}
+        onCollapse={(value) => setCollapsed(value)}
+        style= {{
+          // overflow: 'auto',
+          // height: '100vh',
+          // position: 'fixed',
+          // left: 0,
+          // top: 0,
+          // bottom: 0,
+        }}
+      >
         <Flex align='center' justify='center'>
             <img src={"logo.svg"} className='half-width' alt="logo"/>
         </Flex>
@@ -61,10 +73,13 @@ const CustomMenu = ({ children }) => {
           defaultSelectedKeys={[PATH_URL_MAPPER[currPath]]} 
         />
       </Sider>
-      <Layout>
+      <Layout style={{
+        //'calc(100%-120px)',
+      }}>
         <Header
           style={{
             padding: '0px 16px',
+            // position: 'fixed',
             background: colorBgContainer,
           }}>
             <Flex><Title level={2}>{APP_NAME}</Title></Flex>
@@ -72,12 +87,19 @@ const CustomMenu = ({ children }) => {
         <Content 
           style={{
             margin: '10px 16px',
-            overflow: 'initial',
+            overflow: 'none',
           }}
         >
           {children}
         </Content>
-        <Footer className='txt-align-center'>
+        <Footer 
+          className='txt-align-center'
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            width: '100%',
+          }}
+        >
           {APP_NAME} ©{new Date().getFullYear()} Created by Allah
         </Footer>
       </Layout>

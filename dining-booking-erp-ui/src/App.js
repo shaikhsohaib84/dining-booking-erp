@@ -1,10 +1,12 @@
 import React, { Suspense, lazy } from 'react';
 import { useDispatch } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Layout from './components/Layout';
 import { setGeneric } from './redux/action/genericAction';  
 import {PATH_URL_MAPPER} from './utils/constant.js'
+import CustomMenu from './components/CustomMenu.jsx';
 import './AntDesign.css';
+import 'react-toastify/dist/ReactToastify.css'
 
 const LoadingFallback = () => <div>Loading...</div>;
 
@@ -22,7 +24,7 @@ function PrintLocation() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Layout>
+      <CustomMenu>
       <PrintLocation />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
@@ -33,7 +35,8 @@ export default function App() {
             <Route path="/staff" element={<TableSetting />}/> */}
           </Routes>
         </Suspense>
-      </Layout>
+      </CustomMenu>
+      <ToastContainer />
     </BrowserRouter>
   );
 }
