@@ -23,7 +23,9 @@ const items = [
   getItem('Table', 'table', <TableOutlined />,[
     getItem('More',  'tableSetting', <FormOutlined />),
   ]),
-  getItem('Menu',  'menu', <MenuOutlined />),
+  getItem('Menu',  'menu', <MenuOutlined />, [
+    getItem('More',  'menuSetting', <FormOutlined />),
+  ]),
   getItem('Orders','orders', <OrderedListOutlined />),
   getItem('Staff', 'staff', <UserOutlined />),
 ];
@@ -41,6 +43,7 @@ const CustomMenu = ({ children }) => {
   const menu_switch = {
     'home': () => navigate('/'),
     'tableSetting': () => navigate('/table-setting'),
+    'menuSetting': () => navigate('/menu-setting'),
   }
 
   const handleMenuClick = ({key}) => {
@@ -48,62 +51,53 @@ const CustomMenu = ({ children }) => {
   }
 
   return (
-    <Layout>
-      <Sider 
-        collapsible 
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-        style= {{
-          // overflow: 'auto',
-          // height: '100vh',
-          // position: 'fixed',
-          // left: 0,
-          // top: 0,
-          // bottom: 0,
-        }}
-      >
-        <Flex align='center' justify='center'>
-            <img src={"logo.svg"} className='half-width' alt="logo"/>
-        </Flex>
-        <Menu 
-          theme="dark" 
-          mode="inline" 
-          items={items} 
-          onSelect={handleMenuClick}
-          defaultSelectedKeys={[PATH_URL_MAPPER[currPath]]} 
-        />
-      </Sider>
-      <Layout style={{
-        //'calc(100%-120px)',
-      }}>
-        <Header
-          style={{
-            padding: '0px 16px',
-            // position: 'fixed',
-            background: colorBgContainer,
-          }}>
-            <Flex><Title level={2}>{APP_NAME}</Title></Flex>
-        </Header>
-        <Content 
-          style={{
-            margin: '10px 16px',
-            overflow: 'none',
-          }}
+    <div>
+      <Layout style={{ minHeight: '100vh' }}>
+        <Sider 
+          collapsible 
+          collapsed={collapsed}
+          onCollapse={(value) => setCollapsed(value)}
         >
-          {children}
-        </Content>
-        <Footer 
-          className='txt-align-center'
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            width: '100%',
-          }}
-        >
-          {APP_NAME} ©{new Date().getFullYear()} Created by Allah
-        </Footer>
+          <Flex align='center' justify='center'>
+              <img src={"logo.svg"} className='half-width' alt="logo"/>
+          </Flex>
+          <Menu 
+            theme="dark" 
+            mode="inline" 
+            items={items} 
+            onSelect={handleMenuClick}
+            defaultSelectedKeys={[PATH_URL_MAPPER[currPath]]} 
+          />
+        </Sider>
+        <Layout>
+          <Header
+            style={{
+              padding: '0px 16px',
+              background: colorBgContainer,
+            }}>
+              <Flex><Title level={2}>{APP_NAME}</Title></Flex>
+          </Header>
+          <Content 
+            style={{
+              margin: '10px 16px',
+              overflow: 'none',
+            }}
+          >
+            {children}
+          </Content>
+          <Footer 
+            className='txt-align-center'
+            style={{
+              position: 'fixed',
+              bottom: 0,
+              width: '100%',
+            }}
+          >
+            {APP_NAME} ©{new Date().getFullYear()} Created by Allah
+          </Footer>
+        </Layout>
       </Layout>
-    </Layout>
+    </div>
   );
 };
 export default CustomMenu;

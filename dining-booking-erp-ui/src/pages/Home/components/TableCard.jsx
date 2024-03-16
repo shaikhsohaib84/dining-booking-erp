@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Col, Flex, Row, Spin, Layout } from 'antd';
-import { DollarOutlined, EditOutlined, PlusCircleOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Col, Flex, Row, Spin } from 'antd';
+import { DollarOutlined, EditOutlined , ExclamationCircleOutlined, PlusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Card } from "../../../components/Card.jsx"
 import { ConfirmModal } from "../../../components/ConfirmModal.jsx";
 import Button from "../../../components/Button.jsx";
-import { deleteTableById, getTableAPI } from "../../../utils/apiCall";
+import { deleteTableById, getTableAPI } from "../apiCall.js";
 import { localDateTime, tableIdArray } from "../../../utils/common";
 import { setModel } from "../../../redux/action/modelAction.js"
-import { toastError } from "../../../utils/toast.js";
+import { toastAlert } from "../../../utils/toastAlert.js";
+import { ERROR_MESSAGE, DELETED_SUCCESSFUL } from "../../../utils/constant.js"
 import "../index.css";
 
-const { Content } = Layout;
-
-const TableCard = () => {
+const TableCard = ({ actions }) => {
     const dipatch = useDispatch();
     const modeState = useSelector((state) => state?.models)
     const genericState = useSelector((state) => state?.generic)
@@ -48,7 +47,7 @@ const TableCard = () => {
         if (tableResp.status == 404 || tableResp.status != 204) {
             setIsLoading(false);
             setShowConfirmModal(false);
-            toastError();
+            toastAlert(ERROR_MESSAGE ,"error");
             return;
         }
         let tableDataCopy = [...tableData];
@@ -57,6 +56,7 @@ const TableCard = () => {
         tableDataCopy.forEach((item, idx) => {
             item.tableId = idx + 1;
         });
+        toastAlert(DELETED_SUCCESSFUL ,"success");
         dipatch(setModel('tableData', tableDataCopy));
         setShowConfirmModal(false);
         setIsLoading(false);
@@ -83,24 +83,21 @@ const TableCard = () => {
                 />
             }
             {
-                <div style={{ 
-                        background: 'white', 
-                        height: 'calc(90vh - 50px)', 
-                        overflowY: 'scroll',
-                    }}>
+                <div className="white-color padding-14 x-scrollbar table-card-custom-height">
                     <Row gutter={[8, 8]}>
                         {
                             tableData.map((ins, idx) => (
-                                <Col className="gutter-row" span={6}>
+                                <Col className="gutter-row" span={8}>
                                     <Card
                                         key={idx + 1}
-                                        className={`${ins.is_occupied ? 'red-color' : 'green-color'} height-25-vh cursor-ptr white-color`}
+                                        className={`${ins.is_occupied ? 'red-color' : 'green-color'} card-margin height-25-vh cursor-ptr white-color`}
                                         ChildComponent={
                                             <Flex justify="space-between" align="flex-start">
                                                 <span> {ins.tableId} </span>
                                                 <span> {localDateTime(ins.created_at)} </span>
                                             </Flex>
                                         }
+                                        // actions = {actions}
                                         actions={
                                             currPath !== 'tableSetting' ?
                                                 (
@@ -135,7 +132,7 @@ const TableCard = () => {
                                                 (
                                                     ([
                                                         <Button
-                                                            key="edit-order"
+                                                            key="delete-order"
                                                             onClick={() => { openCloseConfirmModal(true, ins) }}
                                                             disabled={ins.is_occupied}
                                                             size="large"

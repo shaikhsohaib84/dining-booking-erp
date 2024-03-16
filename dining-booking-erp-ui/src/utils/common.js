@@ -11,3 +11,7 @@ export const tableIdArray = (tableArray) => {
         return ins;
     })
 }
+
+export const menuItemFilter = (data, key) => {
+    return data.filter(item => item?.menu_item === key);
+}

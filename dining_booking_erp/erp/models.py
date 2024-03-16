@@ -1,5 +1,9 @@
 from django.db import models
-import uuid
+
+ORDER_TYPE = [
+    ('dining', 'Dining'),
+    ('parcel', 'Parcel')
+]
 
 MENU_TYPES = [
     ('veg', 'Vegetarian'),
@@ -49,6 +53,7 @@ class OrderItem(models.Model):
     id = models.BigAutoField(primary_key=True)
     table_token = models.TextField(unique=True, blank=False, null=False)
     qty = models.IntegerField(default=1, blank=False, null=False)
+    order_type = models.CharField(max_length=20, choices=ORDER_TYPE, default="dining", blank=False, null=False)
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
 
     class Meta:

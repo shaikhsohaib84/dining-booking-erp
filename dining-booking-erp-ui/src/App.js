@@ -12,11 +12,11 @@ const LoadingFallback = () => <div>Loading...</div>;
 
 const Home         = lazy(() => import('./pages/Home'));
 const TableSetting = lazy(() => import('./pages/Table'));
+const MenuItem     = lazy(() => import('./pages/MenuItem'))
 
 function PrintLocation() {
   const dispatch = useDispatch()
   const location = useLocation();
-  
   dispatch(setGeneric({ 'currPath':  PATH_URL_MAPPER[location.pathname] }))
   return null;
 }
@@ -30,9 +30,9 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/table-setting" element={<TableSetting />}/>
-            {/* <Route path="/menu" element={<TableSetting />}/>
-            <Route path="/orders" element={<TableSetting />}/>
-            <Route path="/staff" element={<TableSetting />}/> */}
+             <Route path="/menu-setting" element={<MenuItem />}/>
+            {/* <Route path="/orders" element={<TableSetting />}/>
+            <Route path="/staff" element={<TableSetting />}/>  */}
           </Routes>
         </Suspense>
       </CustomMenu>

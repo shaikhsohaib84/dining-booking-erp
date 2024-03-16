@@ -18,3 +18,8 @@ Blocker's and solution's:
   $ export MYSQLCLIENT_CFLAGS=$(pkg-config --cflags mysqlclient)
 
   $ pip install mysqlclient
+
+- ToDo
+  While deleting table, provide option to transfer order to another table.
+
+  Add user, cafe - table.

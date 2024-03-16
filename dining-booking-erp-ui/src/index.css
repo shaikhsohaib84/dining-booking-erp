@@ -10,18 +10,42 @@ body {
   justify-content: flex-end;
 }
 
+.justify-content-between {
+  justify-content: space-between;
+}
+
 .full-height {
-  height: 100%;
+  max-height: 100vh;
 }
 
 .half-width {
   max-width: 50%;
 }
 
-.min-full-height {
-  min-height: 100vh;
-}
-
 .txt-align-center {
   text-align: center;
+}
+
+.green-color {
+  background-color: #416D19;
+}
+
+.red-color {
+  background-color: #7D0A0A;
+}
+
+.cursor-ptr {
+  cursor: pointer;
+}
+
+.white-color {
+  color: #fff;
+}
+
+.margin-top-10 {
+  margin-top: 10px;
+}
+
+.margin-top-6 {
+  margin-top: 6px;
 }
