@@ -23,3 +23,7 @@ Blocker's and solution's:
   While deleting table, provide option to transfer order to another table.
 
   Add user, cafe - table.
+
+  Add dashboard for billing, profy and menu-item insights
+
+  add kitchen only tab for order visibility inside the kitchen team
