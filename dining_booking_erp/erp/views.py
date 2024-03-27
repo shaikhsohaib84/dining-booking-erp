@@ -34,9 +34,18 @@ class ListMenu(ListAPIView):
     serializer_class = MenuSerializer
 
 class AddMenu(CreateAPIView):
-    queryset = Menu.objects.all()
     serializer_class = MenuSerializer
 
+    def post(self, request):
+        with transaction.atomic():
+            serializer = self.get_serializer(data=request.data, many=True)
+            if serializer.is_valid():
+                serializer.save()
+                menu_instance = Menu.objects.all()
+                serialized_menu_instance = MenuSerializer(menu_instance, many=True)
+                return Response(serialized_menu_instance.data, status=status.HTTP_201_CREATED)
+            return Response(serialized_menu_instance.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class UpdateMenu(UpdateAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer

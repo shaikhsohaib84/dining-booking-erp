@@ -9,10 +9,10 @@ export const Table = ({
 }) => {
     return (
         <AntTable
-            className={className}
             columns={columns} 
             dataSource={data} 
             style={style}
+            className={className}
             {...children}
         />
     )

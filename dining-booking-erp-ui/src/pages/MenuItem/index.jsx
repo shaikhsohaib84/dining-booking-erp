@@ -6,14 +6,14 @@ import { Search } from "../../components/Search";
 import { MenuTab } from "../../components/MenuTab";
 import { setModel } from "../../redux/action/modelAction";
 import { Table } from "../../components/Table";
-import { getMenuItemsAPI } from "./apiCall";
-import { localDateTime, menuItemFilter } from "../../utils/common";
-import { toastAlert } from "../../utils/toastAlert";
-import { ERROR, ERROR_MESSAGE } from "../../utils/constant";
-import "./index.css";
-import Button from "../../components/Button";
 import { Drawer } from "../../components/Drawer";
 import { MenuForm } from "./MenuForm";
+import Button from "../../components/Button";
+import { addMenuItemAPI, getMenuItemsAPI } from "./apiCall";
+import { toastAlert } from "../../utils/toastAlert";
+import { localDateTime, menuItemFilter } from "../../utils/common";
+import { SUCCESS, ERROR, ERROR_MESSAGE, MENU_ITEMS_ADDED_SUCCESSFUL, VEG, NON_VEG } from "../../utils/constant";
+import "./index.css";
 
 const menuItems = [
     {
@@ -68,7 +68,7 @@ const columns = [
       dataIndex: 'menu_type',
       render: (_, record) => (
         <Tag color={record?.menu_type === "veg" ? 'green' : 'red'}>
-            {record?.menu_type}
+            {record?.menu_type === "veg" ? VEG : NON_VEG }
         </Tag>
       ),
     },
@@ -77,16 +77,15 @@ const columns = [
 const MenuItem = () => {
     const dispatch = useDispatch();
     const modelState = useSelector((state) => state?.models)
-    const {pizzaItems, burgerItems, sandwichItems, friesItems, drinkItems} = modelState;
+    const {pizzaItems=[], burgerItems=[], sandwichItems=[], friesItems=[], drinkItems=[], selectedItems=[]} = modelState;
     
     const [menuItemData, setMenuItemData]      = useState([]);
     const [searchData, setSearchData]          = useState([]);
-    const [menuItemColumns, setMenuItemColumn] = useState([]);
+    const [menuItemColumns, setMenuItemColumn] = useState(columns);
     const [showDrawer, setDrawer]              = useState(false);
     const [currentMenuTab, setCurrentMenuTab]  = useState("pizza")
 
     useEffect(() => {
-        setMenuItemColumn(columns);
         getMenuItems();
     }, [])
 
@@ -97,21 +96,21 @@ const MenuItem = () => {
             return
         }
         // util function to segregate the menu data on the basis of items-type(pizza, burger, drinks, sandwich)   
-        const pizzaItems = menuItemFilter(data, "pizza")
-        const burgerItems = menuItemFilter(data, "burger")
-        const sandwichItems = menuItemFilter(data, "sandwich")
-        const friesItems = menuItemFilter(data, "fries")
-        const drinkItems = menuItemFilter(data, "drink")
+        const pizzaFilteredItems = menuItemFilter(data, "pizza")
+        const burgerFilteredItems = menuItemFilter(data, "burger")
+        const sandwichFilteredItems = menuItemFilter(data, "sandwich")
+        const friesFilteredItems = menuItemFilter(data, "fries")
+        const drinkFilteredItems = menuItemFilter(data, "drink")
         
         // setting for intial pizza data.
-        setMenuItemData(pizzaItems);
-        setSearchData(pizzaItems);
+        setMenuItemData(pizzaFilteredItems);
+        setSearchData(pizzaFilteredItems);
 
-        dispatch(setModel('pizzaItems', pizzaItems))
-        dispatch(setModel('burgerItems', burgerItems))
-        dispatch(setModel('sandwichItems', sandwichItems))
-        dispatch(setModel('friesItems', friesItems))
-        dispatch(setModel('drinkItems', drinkItems))
+        dispatch(setModel('pizzaItems', pizzaFilteredItems))
+        dispatch(setModel('burgerItems', burgerFilteredItems))
+        dispatch(setModel('sandwichItems', sandwichFilteredItems))
+        dispatch(setModel('friesItems', friesFilteredItems))
+        dispatch(setModel('drinkItems', drinkFilteredItems))
     }
 
     const onSearch = (value) => {
@@ -124,33 +123,70 @@ const MenuItem = () => {
         setSearchData(filteredMenuItems)
     }
 
-    const menuClick = (e) => {
-        setCurrentMenuTab(e.key)
-        const key = e.key;
+    const menuClick = (key) => {
+        setCurrentMenuTab(key)
+        let currentSelectedData = []
         if(key == 'pizza') {
             setMenuItemData(pizzaItems);
-            setSearchData(pizzaItems);
+            currentSelectedData = pizzaItems
         } else if(key == 'burger') {
             setMenuItemData(burgerItems);
-            setSearchData(burgerItems);
+            currentSelectedData = burgerItems
         } else if(key == 'sandwich') {
             setMenuItemData(sandwichItems);
-            setSearchData(sandwichItems);
+            currentSelectedData = sandwichItems
         } else if(key == 'fries') {
             setMenuItemData(friesItems);
-            setSearchData(friesItems);
+            currentSelectedData = friesItems
         } else {
             setMenuItemData(drinkItems);
-            setSearchData(drinkItems);
+            currentSelectedData = drinkItems
         }
+        setSearchData(currentSelectedData);
     }
 
     const handleDrawer = () => {
         setDrawer(!showDrawer)
     }
 
-    const handleSave = () => {
-        // save menu api 
+    const handleSave = async () => {
+        const { status, data } = await addMenuItemAPI(selectedItems);
+        if (status != 201) {
+            toastAlert(ERROR_MESSAGE ,ERROR);
+            return
+        }
+        debugger
+        const pizzaData    = menuItemFilter(data, "pizza")
+        const burgerData   = menuItemFilter(data, "burger")
+        const sandwichData = menuItemFilter(data, "sandwich")
+        const friesData    = menuItemFilter(data, "fries")
+        const drinkData    = menuItemFilter(data, "drink")
+        
+        dispatch(setModel('selectedItems', []))
+        dispatch(setModel('pizzaItems', pizzaData))
+        dispatch(setModel('burgerItems', burgerData))
+        dispatch(setModel('sandwichItems', sandwichData))
+        dispatch(setModel('friesItems', friesData))
+        dispatch(setModel('drinkItems', drinkData))
+        
+        debugger
+        if (currentMenuTab == 'pizza') {
+            setMenuItemData(pizzaData);
+            setSearchData(pizzaData);
+        } else if (currentMenuTab == 'burger') {
+            setMenuItemData(burgerData);
+            setSearchData(burgerData);
+        } else if (currentMenuTab == 'sandwich') {
+            setMenuItemData(sandwichData);
+            setSearchData(sandwichData);
+        } else if (currentMenuTab == 'fries') {
+            setMenuItemData(friesData);
+            setSearchData(friesData);
+        } else {
+            setMenuItemData(drinkData);
+            setSearchData(drinkData);
+        }
+        toastAlert(MENU_ITEMS_ADDED_SUCCESSFUL, SUCCESS);
     }
     
     return (
@@ -168,9 +204,9 @@ const MenuItem = () => {
                     onClick={handleDrawer}
                 />
                 <Search
-                    className="search-width" 
-                    placeholder="Search in menu-item" 
-                    onSearch={onSearch} 
+                    className="search-width"
+                    placeholder="Search in menu-item"
+                    onSearch={onSearch}
                 />
             </div>
 
@@ -178,13 +214,16 @@ const MenuItem = () => {
                 <MenuTab 
                     current={currentMenuTab}
                     items={menuItems}
-                    onClick={menuClick}
+                    onClick={(e) =>  { menuClick(e.key) } }
                 />
 
                 <Table 
                     className="margin-top-6"
                     columns={menuItemColumns}
                     data={searchData}
+                    style={{
+                        height: '100vh'
+                    }}
                 />
             </div>
 
@@ -198,6 +237,7 @@ const MenuItem = () => {
                         name="Save" 
                         type="link"
                         onClick={handleSave}
+                        disabled={selectedItems.length == 0}
                         style={{
                             backgroundColor: '#65B740',
                             color: '#fff',

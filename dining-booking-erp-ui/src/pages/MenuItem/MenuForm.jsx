@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { InputNumber, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Input } from "../../components/Input"
@@ -6,16 +7,17 @@ import { Switch } from "../../components/Switch"
 import { Select } from '../../components/Select';
 import { Table } from '../../components/Table';
 import Button from '../../components/Button';
-import { MENU_ITEM_TYPE } from '../../utils/constant';
+import { MENU_ITEM_TYPE, NON_VEG, VEG } from '../../utils/constant';
+import { setModel } from '../../redux/action/modelAction';
 
 const menuColumns = [
     {
       title: 'Name',
-      dataIndex: 'itemName',
-      key: 'itemName',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record) => {
         return (
-            <a>{record[0]?.itemName}</a>
+            <a>{text}</a>
         )
       },
     },
@@ -25,28 +27,28 @@ const menuColumns = [
         key: 'rate',
         render: (text, record) => {
         return (
-            <a>{record[0]?.rate}</a>
+            <a>{text}</a>
         )
       },
     },
     {
         title: 'Item Type',
-        dataIndex: 'selectedItemType',
-        key: 'selectedItemType',
+        dataIndex: 'menu_item',
+        key: 'menu_item',
         render: (text, record) => {
         return (
-            <a>{record[0]?.selectedItemType}</a>
+            <a>{text}</a>
         )
       },
     },
     {
       title: 'Dish Type',
-      key: 'isVeg',
-      dataIndex: 'isVeg',
-      render: (_, record) => {
+      key: 'menu_type',
+      dataIndex: 'menu_type',
+      render: (text, record) => {
         return (
-            <Tag color={record[0]?.isVeg === true ? 'green' : 'red'}>
-                { record[0]?.isVeg === true ? "Veg" : "Non-Veg" }
+            <Tag color={text === 'veg' ? 'green' : 'red'}>
+                { text === 'veg' ? VEG : NON_VEG }
             </Tag>
           )
       }
@@ -54,23 +56,26 @@ const menuColumns = [
 ];
 
 export const MenuForm = () => {
-    const [itemName, setItemName] = useState('')
-    const [isVeg, setVeg] = useState(true);
+    const dispatch = useDispatch()
+    const modelState = useSelector((state) => state?.models)
+    const { selectedItems=[] } = modelState;
+
+    const [name, setName] = useState('')
+    const [menu_type, setMenuType] = useState('veg');
     const [rate, setRate] = useState(500);
-    const [selectedItemType, setSelectedItemType] = useState('pizza')
-    const [dataSource, setDataSource] = useState([])
+    const [menu_item, setMenuItem] = useState('pizza')
     const [columns, setColumns] = useState(menuColumns)
 
     const handleAddItem = () => {
-        const updatedData = [...dataSource, [
+        const updatedData = [...selectedItems, 
             {
-                itemName,
-                isVeg,
+                name,
+                menu_type,
                 rate,
-                selectedItemType
+                menu_item
             }
-        ]]
-        setDataSource(updatedData)
+        ]
+        dispatch(setModel('selectedItems', updatedData))
     }
     
     return (
@@ -79,12 +84,12 @@ export const MenuForm = () => {
                 <Switch
                     defaultChecked 
                     onChange={(chk) => {
-                        setVeg(chk)
+                        setMenuType(chk ? 'veg' : 'non_veg')
                     }}
-                    checkedChildren="veg" 
-                    unCheckedChildren="non-veg" 
+                    checkedChildren={VEG}
+                    unCheckedChildren={NON_VEG} 
                     style={{
-                        background: isVeg ? 'green' : 'red'
+                        background: menu_type === 'veg' ? 'green' : 'red'
                     }}
                 />
             </div>
@@ -92,7 +97,7 @@ export const MenuForm = () => {
             <Input 
                 className='all-margin' 
                 placeholder="Name" 
-                onChange={(e) => { setItemName(e.target.value) }} 
+                onChange={(e) => { setName(e.target.value) }} 
             />
             
             <div className='d-flex justify-content-between'>
@@ -108,7 +113,7 @@ export const MenuForm = () => {
 
                     <Select 
                         options={MENU_ITEM_TYPE}
-                        handleChange={ (selectedItemType) => { setSelectedItemType(selectedItemType) } }
+                        handleChange={ (menu_item) => { setMenuItem(menu_item) } }
                     />
                 </div>
 
@@ -118,6 +123,7 @@ export const MenuForm = () => {
                         type="primary"
                         icon={<PlusOutlined />}
                         onClick={handleAddItem}
+                        disabled={name.length == 0}
                         style={{
                             backgroundColor: '#65B740',
                             color: '#fff',
@@ -127,7 +133,7 @@ export const MenuForm = () => {
             </div>
             
             <Table 
-                data={dataSource}
+                data={selectedItems}
                 columns={columns}
             />
             
