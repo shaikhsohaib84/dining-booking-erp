@@ -4,3 +4,14 @@ export const localDateTime = (UTCDateTimeString) => {
         hour12: true,
     });
 }
+
+export const tableIdArray = (tableArray) => {
+    return tableArray.map((ins, idx) => {
+        ins['tableId'] = idx + 1;
+        return ins;
+    })
+}
+
+export const menuItemFilter = (data, key) => {
+    return data.filter(item => item?.menu_item === key);
+}

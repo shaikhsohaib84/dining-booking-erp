@@ -1,38 +1,42 @@
 import React, { Suspense, lazy } from 'react';
+import { useDispatch } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { setGeneric } from './redux/action/genericAction';  
+import {PATH_URL_MAPPER} from './utils/constant.js'
+import CustomMenu from './components/CustomMenu.jsx';
 import './AntDesign.css';
-import Layout from './components/Layout';
-import { useDispatch, useSelector } from 'react-redux';
-import { setGeneric } from './redux/action/genericAction';
+import 'react-toastify/dist/ReactToastify.css'
 
 const LoadingFallback = () => <div>Loading...</div>;
 
 const Home         = lazy(() => import('./pages/Home'));
 const TableSetting = lazy(() => import('./pages/Table'));
+const MenuItem     = lazy(() => import('./pages/MenuItem'))
 
 function PrintLocation() {
   const dispatch = useDispatch()
   const location = useLocation();
-  console.log('location.pathname', location.pathname);
-  // dispatch(setGeneric({ 'path': location.pathname }))
+  dispatch(setGeneric({ 'currPath':  PATH_URL_MAPPER[location.pathname] }))
   return null;
 }
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <PrintLocation />
+      <CustomMenu>
+      <PrintLocation />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/table-setting" element={<TableSetting />}/>
-            {/* <Route path="/menu" element={<></>}/>
-            <Route path="/orders" element={<></>}/>
-            <Route path="/staff" element={<></>}/> */}
+             <Route path="/menu-setting" element={<MenuItem />}/>
+            {/* <Route path="/orders" element={<TableSetting />}/>
+            <Route path="/staff" element={<TableSetting />}/>  */}
           </Routes>
         </Suspense>
-      </Layout>
+      </CustomMenu>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

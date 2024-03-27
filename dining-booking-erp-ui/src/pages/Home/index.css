@@ -1,19 +1,16 @@
-.green-color {
-    background-color: #416D19;
+.table-card-custom-height {
+    /* height: calc(90vh - 50px); */
+    height: calc(85vh - 50px);
 }
 
-.red-color {
-    background-color: #7D0A0A;
+.x-scrollbar {
+    overflow-y: scroll;
 }
 
-.full-height {
-    height: 100%;
+.padding-14 {
+    padding: 14px;
 }
 
-.cursor-ptr {
-    cursor: pointer;
-}
-
-.white-color {
-    color: #fff;
+.card-margin {
+    margin: 4px;
 }

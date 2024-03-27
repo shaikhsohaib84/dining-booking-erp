@@ -1,15 +1,16 @@
 import { Button as AntButton } from 'antd';
 
 const Button = ({
-    name='click me',
+    name='',
     size='small',
-    type='primary',
+    type,
     shape='',
     icon=null,
     disabled=false,
     danger=false,
     ghost=false,
     className='',
+    style,
     onClick=()=>{}
 }) => {
     return (
@@ -22,6 +23,7 @@ const Button = ({
             danger={danger}
             ghost={ghost}
             className={className}
+            style={style}
             onClick={onClick}
         >
             {name}
