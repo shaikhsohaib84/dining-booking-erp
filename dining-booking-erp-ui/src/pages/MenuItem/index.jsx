@@ -155,7 +155,7 @@ const MenuItem = () => {
             toastAlert(ERROR_MESSAGE ,ERROR);
             return
         }
-        debugger
+        
         const pizzaData    = menuItemFilter(data, "pizza")
         const burgerData   = menuItemFilter(data, "burger")
         const sandwichData = menuItemFilter(data, "sandwich")
@@ -169,7 +169,6 @@ const MenuItem = () => {
         dispatch(setModel('friesItems', friesData))
         dispatch(setModel('drinkItems', drinkData))
         
-        debugger
         if (currentMenuTab == 'pizza') {
             setMenuItemData(pizzaData);
             setSearchData(pizzaData);
