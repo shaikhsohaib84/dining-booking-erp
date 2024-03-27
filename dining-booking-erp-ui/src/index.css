@@ -49,3 +49,22 @@ body {
 .margin-top-6 {
   margin-top: 6px;
 }
+
+.all-margin {
+  margin: 5px;
+}
+
+/* .ant-btn:hover {
+  background-color: #65B740;
+  color: #fff;
+} */
+
+.ant-btn-primary {
+  background-color: #65B740;
+  color: #fff;
+} 
+
+.primary-btn {
+  background-color: #65B740;
+  color: #fff;
+}

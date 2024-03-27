@@ -1,10 +1,11 @@
 import { Table as AntTable } from 'antd';
 
 export const Table = ({
-    columns,
-    data,
+    columns=[],
+    data=[],
     className,
     style,
+    ...children
 }) => {
     return (
         <AntTable
@@ -12,6 +13,7 @@ export const Table = ({
             columns={columns} 
             dataSource={data} 
             style={style}
+            {...children}
         />
     )
 }

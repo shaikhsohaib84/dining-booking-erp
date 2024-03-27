@@ -13,6 +13,7 @@ import { ERROR, ERROR_MESSAGE } from "../../utils/constant";
 import "./index.css";
 import Button from "../../components/Button";
 import { Drawer } from "../../components/Drawer";
+import { MenuForm } from "./MenuForm";
 
 const menuItems = [
     {
@@ -160,6 +161,10 @@ const MenuItem = () => {
                     size="middle"
                     type="primary"
                     icon={<PlusOutlined />}
+                    style={{
+                        backgroundColor: '#65B740',
+                        color: '#fff',
+                    }}
                     onClick={handleDrawer}
                 />
                 <Search
@@ -189,11 +194,26 @@ const MenuItem = () => {
                 open={showDrawer}
                 extra={
                     <Space>
-                      <Button name="Save" onClick={handleSave} type="primary" />
-                      <Button name="Cancel" onClick={handleDrawer} />
+                      <Button 
+                        name="Save" 
+                        type="link"
+                        onClick={handleSave}
+                        style={{
+                            backgroundColor: '#65B740',
+                            color: '#fff',
+                        }}
+                    />
+                      <Button 
+                        name="Cancel"
+                        type="default"
+                        onClick={handleDrawer}
+                        danger={true}
+                    />
                     </Space>
                 }
-                Children={null}
+                Children={
+                    <MenuForm />
+                }
             />
         </>
     )
