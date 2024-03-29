@@ -1,29 +1,27 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Space, Tag } from "antd";
+import { Space } from "antd";
 import { PlusOutlined } from '@ant-design/icons';
 import { Search } from "../../components/Search";
-import { MenuTab } from "../../components/MenuTab";
 import { setModel } from "../../redux/action/modelAction";
-import { Table } from "../../components/Table";
 import { Drawer } from "../../components/Drawer";
 import { MenuForm } from "./MenuForm";
 import Button from "../../components/Button";
-import { addMenuItemAPI, getMenuItemsAPI } from "./apiCall";
+import { MenuItemSelection } from "./MenuItemSelection";
 import { toastAlert } from "../../utils/toastAlert";
-import { localDateTime, menuItemFilter } from "../../utils/common";
-import { SUCCESS, ERROR, ERROR_MESSAGE, MENU_ITEMS_ADDED_SUCCESSFUL, VEG, NON_VEG, menuColumns, menuItems } from "../../utils/constant";
+import { menuItemFilter } from "../../utils/common";
+import { SUCCESS, ERROR, ERROR_MESSAGE, MENU_ITEMS_ADDED_SUCCESSFUL } from "../../utils/constant";
+import { addMenuItemAPI, getMenuItemsAPI } from "./apiCall";
 import "./index.css";
 
 
 const MenuItem = () => {
     const dispatch = useDispatch();
     const modelState = useSelector((state) => state?.models)
-    const {pizzaItems=[], burgerItems=[], sandwichItems=[], friesItems=[], drinkItems=[], selectedItems=[]} = modelState;
+    const {selectedItems=[]} = modelState;
     
     const [menuItemData, setMenuItemData]      = useState([]);
     const [searchData, setSearchData]          = useState([]);
-    const [menuItemColumns, setMenuItemColumn] = useState(menuColumns);
     const [showDrawer, setDrawer]              = useState(false);
     const [currentMenuTab, setCurrentMenuTab]  = useState("pizza")
 
@@ -63,28 +61,6 @@ const MenuItem = () => {
             item.rate.toString().includes(value)
         );
         setSearchData(filteredMenuItems)
-    }
-
-    const menuClick = (key) => {
-        setCurrentMenuTab(key)
-        let currentSelectedData = []
-        if(key == 'pizza') {
-            setMenuItemData(pizzaItems);
-            currentSelectedData = pizzaItems
-        } else if(key == 'burger') {
-            setMenuItemData(burgerItems);
-            currentSelectedData = burgerItems
-        } else if(key == 'sandwich') {
-            setMenuItemData(sandwichItems);
-            currentSelectedData = sandwichItems
-        } else if(key == 'fries') {
-            setMenuItemData(friesItems);
-            currentSelectedData = friesItems
-        } else {
-            setMenuItemData(drinkItems);
-            currentSelectedData = drinkItems
-        }
-        setSearchData(currentSelectedData);
     }
 
     const handleDrawer = () => {
@@ -135,6 +111,7 @@ const MenuItem = () => {
             <div className="d-flex justify-content-between">
                 <Button
                     name="Add Item"
+                    className='primary-btn'
                     size="middle"
                     type="primary"
                     icon={<PlusOutlined />}
@@ -148,19 +125,12 @@ const MenuItem = () => {
             </div>
 
             <div className="margin-top-10">
-                <MenuTab 
-                    current={currentMenuTab}
-                    items={menuItems}
-                    onClick={(e) =>  { menuClick(e.key) } }
-                />
-
-                <Table 
-                    className="margin-top-6"
-                    columns={menuItemColumns}
-                    data={searchData}
-                    style={{
-                        height: '100vh'
-                    }}
+                <MenuItemSelection 
+                    searchData={searchData}
+                    currentMenuTab={currentMenuTab} 
+                    setCurrentMenuTab={setCurrentMenuTab}
+                    setMenuItemData={setMenuItemData}
+                    setSearchData={setSearchData}
                 />
             </div>
 

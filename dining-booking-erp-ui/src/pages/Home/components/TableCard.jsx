@@ -10,9 +10,11 @@ import { deleteTableById, getTableAPI } from "../apiCall.js";
 import { localDateTime, tableIdArray } from "../../../utils/common";
 import { setModel } from "../../../redux/action/modelAction.js"
 import { toastAlert } from "../../../utils/toastAlert.js";
-import { ERROR_MESSAGE, DELETED_SUCCESSFUL, menuItems } from "../../../utils/constant.js"
+import { ERROR_MESSAGE, DELETED_SUCCESSFUL, menuItems, menuColumns } from "../../../utils/constant.js"
 import "../index.css";
 import { MenuTab } from "../../../components/MenuTab.jsx";
+import { Table } from "../../../components/Table.jsx";
+import { MenuItemSelection } from "../../MenuItem/MenuItemSelection.jsx";
 
 const TableCard = () => {
     const dipatch = useDispatch();
@@ -21,10 +23,13 @@ const TableCard = () => {
     const { tableData = [] } = modeState;
     const { currPath = '/' } = genericState;
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [currentMenuTab, setCurrentMenuTab]   = useState("pizza")
+    const [isLoading, setIsLoading]             = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [openOrderDrawer, setOrderDrawer] = useState(false);
-    const [selectedTable, setSelectedTable] = useState({});
+    const [openOrderDrawer, setOrderDrawer]     = useState(false);
+    const [selectedTable, setSelectedTable]     = useState({});
+    const [menuItemData, setMenuItemData]       = useState([]);
+    const [searchData, setSearchData]           = useState([]);
 
     useEffect(() => {
         const getTable = async () => {
@@ -138,6 +143,7 @@ const TableCard = () => {
                                                     ]) : ([
                                                         <Button
                                                             name="Add Order"
+                                                            className='primary-btn'
                                                             key="add-order"
                                                             icon={<PlusCircleOutlined />}
                                                             size="small"
@@ -181,7 +187,7 @@ const TableCard = () => {
                                 <Button
                                     name="Save"
                                     type="link"
-                                    onClick={() => {}}
+                                    onClick={() => { }}
                                     disabled={false}
                                 />
                                 <Button
@@ -193,13 +199,13 @@ const TableCard = () => {
                             </Space>
                         }
                         Children={
-                            <>
-                                <MenuTab
-                                    current={''}
-                                    items={menuItems}
-                                    onClick={(e) =>  { console.log(e.key) } }
-                                />
-                            </>
+                            <MenuItemSelection
+                                searchData={searchData}
+                                currentMenuTab={currentMenuTab} 
+                                setCurrentMenuTab={setCurrentMenuTab}
+                                setMenuItemData={setMenuItemData}
+                                setSearchData={setSearchData}
+                            />
                         }
                     />
                 )

@@ -121,6 +121,7 @@ export const MenuForm = () => {
                     <Button 
                         name='Add' 
                         type="primary"
+                        className='primary-btn'
                         icon={<PlusOutlined />}
                         onClick={handleAddItem}
                         disabled={name.length == 0}

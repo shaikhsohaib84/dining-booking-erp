@@ -38,6 +38,7 @@ const TableSetting = () => {
             <div className="d-flex justify-content-end margin-4">
                 <Button
                     name="Add Table"
+                    className='primary-btn'
                     size="middle"
                     type="primary"
                     icon={<PlusOutlined />}
