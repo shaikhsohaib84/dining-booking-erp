@@ -2,7 +2,7 @@ import { Drawer as AntDrawer } from 'antd';
 
 export const Drawer = ({
     title="",
-    width=720,
+    width='50%',
     onClose=null,
     open=false,
     extra=null,

@@ -124,10 +124,6 @@ export const MenuForm = () => {
                         icon={<PlusOutlined />}
                         onClick={handleAddItem}
                         disabled={name.length == 0}
-                        style={{
-                            backgroundColor: '#65B740',
-                            color: '#fff',
-                        }}
                     />
                 </div>
             </div>

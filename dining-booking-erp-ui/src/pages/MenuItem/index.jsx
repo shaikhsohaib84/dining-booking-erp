@@ -12,67 +12,9 @@ import Button from "../../components/Button";
 import { addMenuItemAPI, getMenuItemsAPI } from "./apiCall";
 import { toastAlert } from "../../utils/toastAlert";
 import { localDateTime, menuItemFilter } from "../../utils/common";
-import { SUCCESS, ERROR, ERROR_MESSAGE, MENU_ITEMS_ADDED_SUCCESSFUL, VEG, NON_VEG } from "../../utils/constant";
+import { SUCCESS, ERROR, ERROR_MESSAGE, MENU_ITEMS_ADDED_SUCCESSFUL, VEG, NON_VEG, menuColumns, menuItems } from "../../utils/constant";
 import "./index.css";
 
-const menuItems = [
-    {
-      label: 'Pizza',
-      key: 'pizza',
-      icon: <img src={"pizza.svg"} alt="pizza"/> 
-    },
-    {
-      label: 'Burger',
-      key: 'burger',
-      icon: <img src={"burger.svg"} alt="burger"/> 
-    },
-    {
-        label: 'Sandwich',
-        key: 'sandwich',
-        icon: <img src={"sandwich.svg"} alt="sandwich"/> 
-    },
-    {
-        label: 'Fries',
-        key: 'fries',
-        icon: <img src={"fries.svg"} alt="fries"/> 
-    },
-    {
-        label: 'Drinks',
-        key: 'drinks',
-        icon: <img src={"drink.svg"} alt="drink"/> 
-    },
-];
-
-const columns = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text) => <a>{text}</a>,
-    },
-    {
-        title: 'Rate',
-        dataIndex: 'rate',
-        key: 'rate',
-        render: (text) => <a>{text}</a>,
-      },
-    {
-      title: 'Created At',
-      dataIndex: 'created_at',
-      key: 'created_at',
-      render: (_, record) => <a>{localDateTime(record.created_at)}</a> 
-    },
-    {
-      title: 'Menu Type',
-      key: 'menu_type',
-      dataIndex: 'menu_type',
-      render: (_, record) => (
-        <Tag color={record?.menu_type === "veg" ? 'green' : 'red'}>
-            {record?.menu_type === "veg" ? VEG : NON_VEG }
-        </Tag>
-      ),
-    },
-];
 
 const MenuItem = () => {
     const dispatch = useDispatch();
@@ -81,7 +23,7 @@ const MenuItem = () => {
     
     const [menuItemData, setMenuItemData]      = useState([]);
     const [searchData, setSearchData]          = useState([]);
-    const [menuItemColumns, setMenuItemColumn] = useState(columns);
+    const [menuItemColumns, setMenuItemColumn] = useState(menuColumns);
     const [showDrawer, setDrawer]              = useState(false);
     const [currentMenuTab, setCurrentMenuTab]  = useState("pizza")
 
@@ -196,10 +138,6 @@ const MenuItem = () => {
                     size="middle"
                     type="primary"
                     icon={<PlusOutlined />}
-                    style={{
-                        backgroundColor: '#65B740',
-                        color: '#fff',
-                    }}
                     onClick={handleDrawer}
                 />
                 <Search
@@ -237,10 +175,6 @@ const MenuItem = () => {
                         type="link"
                         onClick={handleSave}
                         disabled={selectedItems.length == 0}
-                        style={{
-                            backgroundColor: '#65B740',
-                            color: '#fff',
-                        }}
                     />
                       <Button 
                         name="Cancel"

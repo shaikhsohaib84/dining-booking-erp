@@ -14,6 +14,10 @@ body {
   justify-content: space-between;
 }
 
+.justify-content-around {
+  justify-content: space-around;
+}
+
 .full-height {
   max-height: 100vh;
 }
@@ -27,11 +31,11 @@ body {
 }
 
 .green-color {
-  background-color: #416D19;
+  background-color: #65B740;
 }
 
 .red-color {
-  background-color: #7D0A0A;
+  background-color:  #D24545;
 }
 
 .cursor-ptr {
@@ -54,17 +58,12 @@ body {
   margin: 5px;
 }
 
-/* .ant-btn:hover {
-  background-color: #65B740;
-  color: #fff;
-} */
-
 .ant-btn-primary {
-  background-color: #65B740;
-  color: #fff;
+  background-color: #65B740 !important;
+  color: #fff !important;
 } 
 
 .primary-btn {
-  background-color: #65B740;
-  color: #fff;
+  background-color: #65B740 !important;
+  color: #fff !important;
 }

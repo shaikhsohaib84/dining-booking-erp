@@ -58,6 +58,7 @@ class ListCreateOrder(ListCreateAPIView):
     def create(self, request):
         menu_data    = request.data.get('menu', [])
         table_id     = request.data.get('table_id', None)
+        order_type   = request.data.get('order_type', 'dining')
         if not menu_data or not table_id: return Response({
             'message': 'Required parameter missing!'
         },status=status.HTTP_400_BAD_REQUEST)
@@ -67,13 +68,13 @@ class ListCreateOrder(ListCreateAPIView):
             Table.objects.filter(id=table_id).update(table_token=table_token, is_occupied=True, start_at=datetime.datetime.now(pytz.utc))
             for item in menu_data:
                 menu_id, qty = item.get('id', 0), item.get('qty', 0)
-                key = f'{table_token}{menu_id}'
+                key = f'{table_token}{menu_id}' # key is required for the duplicate orders for similar dish, just add-on the qty.
                 if key in menu_hashmap:
                     menu_hashmap[key].qty += qty
                     continue
                 menu_instance = Menu.objects.filter(id=menu_id).first()
                 if menu_instance: 
-                    menu_hashmap[key] = OrderItem(table_token=table_token, menu=menu_instance, qty=qty)
+                    menu_hashmap[key] = OrderItem(table_token=table_token, menu=menu_instance, qty=qty, order_type=order_type)
             OrderItem.objects.bulk_create(menu_hashmap.values())
         return Response({
             'message': 'Data created'

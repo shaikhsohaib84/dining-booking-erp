@@ -14,3 +14,8 @@
 .card-margin {
     margin: 4px;
 }
+
+.grey-btn {
+    background-color: #EEEEEE !important;
+    color: #000 !important;
+}

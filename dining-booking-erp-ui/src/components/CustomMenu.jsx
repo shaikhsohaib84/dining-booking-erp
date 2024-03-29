@@ -23,9 +23,7 @@ const items = [
   getItem('Table', 'table', <TableOutlined />,[
     getItem('More',  'tableSetting', <FormOutlined />),
   ]),
-  getItem('Menu',  'menu', <MenuOutlined />, [
-    getItem('More',  'menuSetting', <FormOutlined />),
-  ]),
+  getItem('Menu',  'menu', <MenuOutlined />),
   getItem('Orders','orders', <OrderedListOutlined />),
   getItem('Staff', 'staff', <UserOutlined />),
 ];
@@ -43,7 +41,7 @@ const CustomMenu = ({ children }) => {
   const menu_switch = {
     'home': () => navigate('/'),
     'tableSetting': () => navigate('/table-setting'),
-    'menuSetting': () => navigate('/menu-setting'),
+    'menu': () => navigate('/menu'),
   }
 
   const handleMenuClick = ({key}) => {

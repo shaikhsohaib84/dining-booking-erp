@@ -43,10 +43,6 @@ const TableSetting = () => {
                     icon={<PlusOutlined />}
                     onClick={AddTable}
                     disabled={isAddTableDisabled}
-                    style={{
-                        backgroundColor: '#65B740',
-                        color: '#fff',
-                    }}
                 />
             </div>
             <TableCard />

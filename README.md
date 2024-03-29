@@ -20,10 +20,14 @@ Blocker's and solution's:
   $ pip install mysqlclient
 
 - ToDo
-  While deleting table, provide option to transfer order to another table.
+  While deleting table, provide option to transfer order to another table. If the selected table is occupied.
 
-  Add user, cafe - table.
+  Add user, cafe - table.(Single brnad has multiple franchise and owner should be able to access across all the app's)
 
-  Add dashboard for billing, profy and menu-item insights
+  Add dashboard for billing, profit and menu-item insights
 
   add kitchen only tab for order visibility inside the kitchen team
+
+  Delete btn in menu tab.
+
+  Remove btn, while adding the menu item.

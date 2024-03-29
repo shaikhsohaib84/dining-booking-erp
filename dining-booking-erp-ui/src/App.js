@@ -30,7 +30,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/table-setting" element={<TableSetting />}/>
-             <Route path="/menu-setting" element={<MenuItem />}/>
+             <Route path="/menu" element={<MenuItem />}/>
             {/* <Route path="/orders" element={<TableSetting />}/>
             <Route path="/staff" element={<TableSetting />}/>  */}
           </Routes>
