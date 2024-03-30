@@ -10,7 +10,7 @@ import Button from "../../components/Button";
 import { MenuItemSelection } from "./MenuItemSelection";
 import { toastAlert } from "../../utils/toastAlert";
 import { menuItemFilter } from "../../utils/common";
-import { SUCCESS, ERROR, ERROR_MESSAGE, MENU_ITEMS_ADDED_SUCCESSFUL } from "../../utils/constant";
+import { SUCCESS, ERROR, ERROR_MESSAGE, MENU_ITEMS_ADDED_SUCCESSFUL, menuColumns } from "../../utils/constant";
 import { addMenuItemAPI, getMenuItemsAPI } from "./apiCall";
 import "./index.css";
 
@@ -126,9 +126,8 @@ const MenuItem = () => {
 
             <div className="margin-top-10">
                 <MenuItemSelection 
+                    menuColumns={menuColumns}
                     searchData={searchData}
-                    currentMenuTab={currentMenuTab} 
-                    setCurrentMenuTab={setCurrentMenuTab}
                     setMenuItemData={setMenuItemData}
                     setSearchData={setSearchData}
                 />

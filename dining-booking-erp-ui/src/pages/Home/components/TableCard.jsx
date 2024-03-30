@@ -1,35 +1,163 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Col, Flex, Row, Space, Spin } from 'antd';
-import { DollarOutlined, EditOutlined, ExclamationCircleOutlined, PlusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Checkbox, Col, Flex, Row, Space, Spin, Tag } from 'antd';
+import { 
+    DollarOutlined, 
+    EditOutlined, 
+    ExclamationCircleOutlined, 
+    PlusCircleOutlined, 
+    DeleteOutlined } from '@ant-design/icons';
 import { Card } from "../../../components/Card.jsx"
-import { ConfirmModal } from "../../../components/ConfirmModal.jsx";
 import Button from "../../../components/Button.jsx";
 import { Drawer } from "../../../components/Drawer.jsx";
+import { Search } from "../../../components/Search.jsx";
+import { ConfirmModal } from "../../../components/ConfirmModal.jsx";
+import { MenuItemSelection } from "../../MenuItem/MenuItemSelection.jsx";
 import { deleteTableById, getTableAPI } from "../apiCall.js";
-import { localDateTime, tableIdArray } from "../../../utils/common";
+import { localDateTime, menuItemFilter, tableIdArray } from "../../../utils/common";
 import { setModel } from "../../../redux/action/modelAction.js"
 import { toastAlert } from "../../../utils/toastAlert.js";
-import { ERROR_MESSAGE, DELETED_SUCCESSFUL, menuItems, menuColumns } from "../../../utils/constant.js"
+import { ERROR_MESSAGE, DELETED_SUCCESSFUL, VEG, NON_VEG, ERROR } from "../../../utils/constant.js"
 import "../index.css";
-import { MenuTab } from "../../../components/MenuTab.jsx";
-import { Table } from "../../../components/Table.jsx";
-import { MenuItemSelection } from "../../MenuItem/MenuItemSelection.jsx";
+import "../../MenuItem/index.css"
+import { getMenuItemsAPI } from "../../MenuItem/apiCall.js";
 
 const TableCard = () => {
-    const dipatch = useDispatch();
+    const dispatch = useDispatch();
     const modeState = useSelector((state) => state?.models)
     const genericState = useSelector((state) => state?.generic)
-    const { tableData = [] } = modeState;
-    const { currPath = '/' } = genericState;
+    const { currPath = '/', currentMenuTab='pizza' } = genericState;
+    const { tableData = [], pizzaItems=[], burgerItems=[], sandwichItems=[], friesItems=[], drinkItems=[] } = modeState;
 
-    const [currentMenuTab, setCurrentMenuTab]   = useState("pizza")
     const [isLoading, setIsLoading]             = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [openOrderDrawer, setOrderDrawer]     = useState(false);
     const [selectedTable, setSelectedTable]     = useState({});
+    const [selectedRowMap, setSelectedRowMap]   = useState({});
     const [menuItemData, setMenuItemData]       = useState([]);
     const [searchData, setSearchData]           = useState([]);
+    
+    const menuColumns = [
+        {
+            title: '',
+            dataIndex: '',
+            key: '',
+            render: (text, record) => {
+                return (
+                    <Checkbox
+                        checked={record?.isSelected} 
+                        onChange={(e) => {
+                            debugger
+                            if(currentMenuTab === 'pizza') {
+                                const newPizzaItems = pizzaItems.map((ins) => {
+                                    if (ins?.id == record?.id) {
+                                        ins.isSelected = !ins.isSelected;
+                                        if (ins.isSelected) {
+                                            setSelectedRowMap({...selectedRowMap, [record['id']]: ins });
+                                        } else {
+                                            let hashMapCopy = {...selectedRowMap};
+                                            delete hashMapCopy[record.id]
+                                            setSelectedRowMap(hashMapCopy);
+                                        }
+                                    }
+                                    return ins;
+                                })
+                                dispatch(setModel('pizzaItems', newPizzaItems))
+                            } else if(currentMenuTab === 'burger') {
+                                const newBurgerItems = burgerItems.map((ins) => {
+                                    if (ins?.id == record?.id) {
+                                        ins.isSelected = !ins.isSelected;
+                                        if (ins.isSelected) {
+                                            setSelectedRowMap({...selectedRowMap, [record['id']]: ins });
+                                        } else {
+                                            let hashMapCopy = {...selectedRowMap};
+                                            delete hashMapCopy[record.id]
+                                            setSelectedRowMap(hashMapCopy);
+                                        }
+                                    }
+                                    return ins;
+                                })
+                                dispatch(setModel('burgerItems', newBurgerItems))
+                            } else if(currentMenuTab === 'sandwich') {
+                                const newSandwichItems = sandwichItems.map((ins) => {
+                                    if (ins?.id == record?.id) {
+                                        ins.isSelected = !ins.isSelected;
+                                        if (ins.isSelected) {
+                                            setSelectedRowMap({...selectedRowMap, [record['id']]: ins });
+                                        } else {
+                                            let hashMapCopy = {...selectedRowMap};
+                                            delete hashMapCopy[record.id]
+                                            setSelectedRowMap(hashMapCopy);
+                                        }
+                                    }
+                                    return ins;
+                                })
+                                dispatch(setModel('sandwichItems', newSandwichItems))
+                            } else if(currentMenuTab === 'fries') {
+                                const newFriesItems = friesItems.map((ins) => {
+                                    if (ins?.id == record?.id) {
+                                        ins.isSelected = !ins.isSelected;
+                                        if (ins.isSelected) {
+                                            setSelectedRowMap({...selectedRowMap, [record['id']]: ins });
+                                        } else {
+                                            let hashMapCopy = {...selectedRowMap};
+                                            delete hashMapCopy[record.id]
+                                            setSelectedRowMap(hashMapCopy);
+                                        }
+                                    }
+                                    return ins;
+                                })
+                                dispatch(setModel('friesItems', newFriesItems))
+                            } else {
+                                const newDrinkItems = drinkItems.map((ins) => {
+                                    if (ins?.id == record?.id) {
+                                        ins.isSelected = !ins.isSelected;
+                                        if (ins.isSelected) {
+                                            setSelectedRowMap({...selectedRowMap, [record['id']]: ins });
+                                        } else {
+                                            let hashMapCopy = {...selectedRowMap};
+                                            delete hashMapCopy[record.id]
+                                            setSelectedRowMap(hashMapCopy);
+                                        }
+                                    }
+                                    return ins;
+                                })
+                                dispatch(setModel('drinkItems', newDrinkItems))
+                            }
+                        }} 
+                    />
+                )
+            },
+        },
+        {
+          title: 'Name',
+          dataIndex: 'name',
+          key: 'name',
+          render: (text) => <a>{text}</a>,
+        },
+        {
+            title: 'Rate',
+            dataIndex: 'rate',
+            key: 'rate',
+            render: (text) => <a>{text}</a>,
+          },
+        {
+          title: 'Created At',
+          dataIndex: 'created_at',
+          key: 'created_at',
+          render: (_, record) => <a>{localDateTime(record.created_at)}</a> 
+        },
+        {
+          title: 'Menu Type',
+          key: 'menu_type',
+          dataIndex: 'menu_type',
+          render: (_, record) => (
+            <Tag color={record?.menu_type === "veg" ? 'green' : 'red'}>
+                {record?.menu_type === "veg" ? VEG : NON_VEG }
+            </Tag>
+          ),
+        },
+    ];
 
     useEffect(() => {
         const getTable = async () => {
@@ -37,11 +165,43 @@ const TableCard = () => {
             const tableDataResponse = await getTableAPI();
             if (tableDataResponse.status === 200) {
                 const tableData = tableIdArray(tableDataResponse.data);
-                dipatch(setModel('tableData', tableData));
+                dispatch(setModel('tableData', tableData));
             }
             setIsLoading(false);
         }
+        
+        const getMenuItems = async () => {
+            let { status, data = [] } = await getMenuItemsAPI();
+            if (status != 200) {
+                toastAlert(ERROR_MESSAGE, ERROR);
+                return
+            }
+            data = data.filter((ins) => {
+                ins['key']=ins.id
+                ins['isSelected']=false
+                return ins
+            })
+            
+            // util function to segregate the menu data on the basis of items-type(pizza, burger, drinks, sandwich)   
+            const pizzaFilteredItems = menuItemFilter(data, "pizza")
+            const burgerFilteredItems = menuItemFilter(data, "burger")
+            const sandwichFilteredItems = menuItemFilter(data, "sandwich")
+            const friesFilteredItems = menuItemFilter(data, "fries")
+            const drinkFilteredItems = menuItemFilter(data, "drink")
+    
+            // setting for intial pizza data.
+            setMenuItemData(pizzaFilteredItems);
+            setSearchData(pizzaFilteredItems);
+    
+            dispatch(setModel('pizzaItems', pizzaFilteredItems))
+            dispatch(setModel('burgerItems', burgerFilteredItems))
+            dispatch(setModel('sandwichItems', sandwichFilteredItems))
+            dispatch(setModel('friesItems', friesFilteredItems))
+            dispatch(setModel('drinkItems', drinkFilteredItems))
+        }
+
         getTable();
+        getMenuItems();
     }, [])
 
     const handleOrderDrawer = () => {
@@ -69,7 +229,7 @@ const TableCard = () => {
             item.tableId = idx + 1;
         });
         toastAlert(DELETED_SUCCESSFUL, "success");
-        dipatch(setModel('tableData', tableDataCopy));
+        dispatch(setModel('tableData', tableDataCopy));
         setShowConfirmModal(false);
         setIsLoading(false);
     }
@@ -79,6 +239,16 @@ const TableCard = () => {
         setSelectedTable(ins);
     }
 
+    const onSearch = (value) => {
+        const filteredMenuItems = menuItemData.filter(item =>
+            item.name.toLowerCase().includes(value.toLowerCase()) ||
+            item.menu_type.toLowerCase().includes(value.toLowerCase()) ||
+            item.menu_item.toLowerCase().includes(value.toLowerCase()) ||
+            item.rate.toString().includes(value)
+        );
+        setSearchData(filteredMenuItems)
+    }
+    console.log('selectedRowMap', Object.values(selectedRowMap));
     return (
         <Spin spinning={isLoading}>
             {showConfirmModal &&
@@ -156,8 +326,8 @@ const TableCard = () => {
                                                 (
                                                     ([
                                                         <Button
-                                                            name="Delete Order"
-                                                            key="delete-order"
+                                                            name="Remove Table"
+                                                            key="remove-table"
                                                             onClick={() => { openCloseConfirmModal(true, ins) }}
                                                             disabled={ins.is_occupied}
                                                             size="small"
@@ -199,13 +369,22 @@ const TableCard = () => {
                             </Space>
                         }
                         Children={
-                            <MenuItemSelection
-                                searchData={searchData}
-                                currentMenuTab={currentMenuTab} 
-                                setCurrentMenuTab={setCurrentMenuTab}
-                                setMenuItemData={setMenuItemData}
-                                setSearchData={setSearchData}
-                            />
+                            <>
+                                <div className="d-flex justify-content-end">
+                                    <Search
+                                        className="search-width"
+                                        placeholder="Search in menu-item"
+                                        onSearch={onSearch}
+                                    />
+                                </div>
+
+                                <MenuItemSelection
+                                    menuColumns={menuColumns}
+                                    searchData={searchData}
+                                    setMenuItemData={setMenuItemData}
+                                    setSearchData={setSearchData}
+                                />
+                            </>
                         }
                     />
                 )
