@@ -31,3 +31,10 @@ Blocker's and solution's:
   Delete btn in menu tab.
 
   Remove btn, while adding the menu item.
+
+  Display bill price on Home > occupied-table.
+
+- Bug fix
+  After selecting the menu tab, refresh the page selected tab not showing
+
+  While adding new menu, ask which one to set in menu-list

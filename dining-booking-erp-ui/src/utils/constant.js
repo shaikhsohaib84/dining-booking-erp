@@ -1,14 +1,19 @@
-import { localDateTime } from "./common"
-import { Tag } from "antd";
+export const APP_NAME                      = "Al-hamdulillah"
+export const ERROR                         = "error"
+export const WARNING                       = "warning"
+export const SUCCESS                       = "success"
+export const VEG                           = 'Veg'
+export const NON_VEG                       = 'Non-veg'
+export const PARCEL                        = 'Parcel'
+export const DINING                        = 'Dining'
+export const ERROR_MESSAGE                 = 'Something went wrong!'
+export const NO_DATA_AVAILABLE             = "No data available"
+export const DELETED_SUCCESSFULLY          = 'Deleted successfully'
+export const MENU_EDIT_SUCCESSFULLY        = "Menu edit successfully"
+export const ORDER_CREATED_SUCESSFULLY     = 'Order created successfully'
+export const MENU_DELETED_SUCESSFULLY      = 'Menu deleted successfully'
+export const MENU_ITEMS_ADDED_SUCCESSFULLY = 'Menu item added successfully'
 
-export const APP_NAME                    = "Al-hamdulillah"
-export const ERROR                       = "error"
-export const SUCCESS                     = "success"
-export const ERROR_MESSAGE               = 'Something went wrong!'
-export const DELETED_SUCCESSFUL          = 'Deleted successful'
-export const MENU_ITEMS_ADDED_SUCCESSFUL = 'Menu item added successful'
-export const VEG                         = 'Veg'
-export const NON_VEG                     = 'Non-veg'
 
 export const PATH_URL_MAPPER = {
     "/": "home",
@@ -64,36 +69,5 @@ export const menuItems = [
         label: 'Drinks',
         key: 'drinks',
         icon: <img src={"drink.svg"} alt="drink"/> 
-    },
-];
-
-export const menuColumns = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text) => <a>{text}</a>,
-    },
-    {
-        title: 'Rate',
-        dataIndex: 'rate',
-        key: 'rate',
-        render: (text) => <a>{text}</a>,
-      },
-    {
-      title: 'Created At',
-      dataIndex: 'created_at',
-      key: 'created_at',
-      render: (_, record) => <a>{localDateTime(record.created_at)}</a> 
-    },
-    {
-      title: 'Menu Type',
-      key: 'menu_type',
-      dataIndex: 'menu_type',
-      render: (_, record) => (
-        <Tag color={record?.menu_type === "veg" ? 'green' : 'red'}>
-            {record?.menu_type === "veg" ? VEG : NON_VEG }
-        </Tag>
-      ),
     },
 ];

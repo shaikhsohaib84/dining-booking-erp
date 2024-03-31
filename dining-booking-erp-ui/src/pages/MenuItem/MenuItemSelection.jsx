@@ -5,6 +5,7 @@ import { menuItems } from "../../utils/constant"
 import { setGeneric } from "../../redux/action/genericAction";
 
 export const MenuItemSelection = ({
+    tableScroll=null,
     searchData,
     menuColumns,
     setMenuItemData,
@@ -50,6 +51,9 @@ export const MenuItemSelection = ({
                 className="margin-top-6"
                 columns={menuColumns}
                 data={searchData}
+                scroll={{
+                    y: tableScroll,
+                }}  
                 style={{
                     height: '100vh'
                 }}                

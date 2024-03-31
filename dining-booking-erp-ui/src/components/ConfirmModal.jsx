@@ -3,9 +3,9 @@ import { Modal as AntModal } from "antd";
 export const ConfirmModal = ({
     title = "",
     open = false,
-    okText = "",
+    okText = null,
     okType = "primary",
-    cancelText = "",
+    cancelText = null,
     icon = null,
     onOk = null,
     onCancel = null,
