@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Checkbox, Col, Flex, Row, Space, Spin, Tag } from 'antd';
+import { Checkbox, Col, Flex, Row, Space, Spin, Tag, Typography } from 'antd';
 import {
-    DollarOutlined,
     PlusOutlined,
-    EditOutlined,
+    FormOutlined,
     MinusOutlined,
     DeleteOutlined,
     PlusCircleOutlined,
@@ -15,6 +14,7 @@ import { Card } from "../../../components/Card.jsx"
 import Button from "../../../components/Button.jsx";
 import { Drawer } from "../../../components/Drawer.jsx";
 import { Search } from "../../../components/Search.jsx";
+import { Switch } from "../../../components/Switch.jsx";
 import { ConfirmModal } from "../../../components/ConfirmModal.jsx";
 import { MenuItemSelection } from "../../MenuItem/MenuItemSelection.jsx";
 import { createOrderByTableId, deleteTableById, getTableAPI } from "../apiCall.js";
@@ -23,10 +23,11 @@ import { toastAlert } from "../../../utils/toastAlert.js";
 import { setModel } from "../../../redux/action/modelAction.js"
 import { getMenuItemsAPI } from "../../MenuItem/apiCall.js";
 import { setGeneric } from "../../../redux/action/genericAction.js";
-import { ERROR_MESSAGE, DELETED_SUCCESSFULLY, VEG, NON_VEG, ERROR, DINING, PARCEL, NO_DATA_AVAILABLE, WARNING, SUCCESS, ORDER_CREATED_SUCESSFULLY } from "../../../utils/constant.js"
+import { ERROR_MESSAGE, DELETED_SUCCESSFULLY, VEG, NON_VEG, ERROR, DINING, PARCEL, NO_DATA_AVAILABLE, WARNING, SUCCESS, ORDER_CREATED_SUCESSFULLY, NAME, RATE, MENU_TYPE } from "../../../utils/constant.js"
 import "../index.css";
 import "../../MenuItem/index.css"
-import { Switch } from "../../../components/Switch.jsx";
+import { OrderForSelectedTable } from "./OrderForSelectedTable.jsx";
+const { Title } = Typography
 
 const TableCard = () => {
     const dispatch = useDispatch();
@@ -35,11 +36,13 @@ const TableCard = () => {
     const { currPath = '/', currentMenuTab = 'pizza', selectedRowMap = {} } = genericState;
     const { tableData = [], pizzaItems = [], burgerItems = [], sandwichItems = [], friesItems = [], drinkItems = [] } = modelState;
 
+    const [totalPrice, setTotalPrice] = useState(0)
     const [orderType, setOrderType] = useState('dining')
     const [isLoading, setIsLoading] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [openOrderDrawer, setOrderDrawer] = useState(false);
     const [showSaveOrderModal, setShowSaveOrderModal] = useState(false);
+    const [showTableOrderModal, setShowTableOrderModal] = useState(false);
     const [selectedTable, setSelectedTable] = useState({});
     const [menuItemData, setMenuItemData] = useState([]);
     const [searchData, setSearchData] = useState([]);
@@ -136,16 +139,35 @@ const TableCard = () => {
             },
         },
         {
-            title: 'Name',
+            title: `${NAME}`,
             dataIndex: 'name',
             key: 'name',
             render: (text) => <a>{text}</a>,
         },
         {
-            title: 'Rate',
+            title: `${RATE}`,
             dataIndex: 'rate',
             key: 'rate',
             render: (text) => <a>{text}</a>,
+        },
+        {
+            title: 'Price',
+            dataIndex: 'price',
+            key: 'price',
+            render: (text, record) => {
+                const qtyByRate = record?.rate * record?.qty
+                // const updatedArr = menuItemData.filter((ins) => {
+                //     if (record?.id == ins?.id) {
+                //         ins['price'] = qtyByRate;
+                //     }
+                //     return ins;
+                // })
+                // setMenuItemData(updatedArr);
+                // setSearchData(updatedArr);
+                return (
+                    <a>{qtyByRate}</a>
+                )
+            },
         },
         {
             title: 'Created At',
@@ -154,7 +176,7 @@ const TableCard = () => {
             render: (_, record) => <a>{localDateTime(record.created_at)}</a>
         },
         {
-            title: 'Menu Type',
+            title: `${MENU_TYPE}`,
             key: 'menu_type',
             dataIndex: 'menu_type',
             render: (_, record) => (
@@ -167,27 +189,32 @@ const TableCard = () => {
             title: 'Qty',
             key: 'qty',
             dataIndex: 'qty',
-            render: (_, record) => (
-                <div className="d-flex">
-                    <Space size="small">
-                        <Button
-                            disabled={record?.isSelected == false}
-                            icon={<PlusOutlined />}
-                            onClick={() => { handleQty('add', record) }}
-                        />
-                        <span>{record?.qty}</span>
-                        <Button
-                            disabled={record?.isSelected == false}
-                            icon={<MinusOutlined />}
-                            onClick={() => { handleQty('minus', record) }}
-                        />
-                    </Space>
-                </div>
-            ),
+            render: (_, record) => {
+                return (
+                    <div className="d-flex">
+                        <Space size="small">
+                            <Button
+                                disabled={record?.isSelected == false}
+                                icon={<PlusOutlined />}
+                                onClick={() => { handleQty('add', record) }}
+                            />
+                            <span>{record?.qty}</span>
+                            <Button
+                                disabled={record?.isSelected == false}
+                                icon={<MinusOutlined />}
+                                onClick={() => { handleQty('minus', record) }}
+                            />
+                        </Space>
+                    </div>
+                )
+            }
         },
     ];
 
     useEffect(() => {
+        setMenuItemData(pizzaItems);
+        setSearchData(pizzaItems);
+
         const getTable = async () => {
             setIsLoading(true);
             const tableDataResponse = await getTableAPI();
@@ -198,39 +225,7 @@ const TableCard = () => {
             setIsLoading(false);
         }
 
-        const getMenuItems = async () => {
-            let { status, data = [] } = await getMenuItemsAPI();
-            if (status != 200) {
-                toastAlert(ERROR_MESSAGE, ERROR);
-                return
-            }
-            data = data.filter((ins) => {
-                ins['key'] = ins.id
-                ins['qty'] = 0
-                ins['isSelected'] = false
-                return ins
-            })
-
-            // util function to segregate the menu data on the basis of items-type(pizza, burger, drinks, sandwich)   
-            const pizzaFilteredItems = menuItemFilter(data, "pizza")
-            const burgerFilteredItems = menuItemFilter(data, "burger")
-            const sandwichFilteredItems = menuItemFilter(data, "sandwich")
-            const friesFilteredItems = menuItemFilter(data, "fries")
-            const drinkFilteredItems = menuItemFilter(data, "drink")
-
-            // setting for intial pizza data.
-            setMenuItemData(pizzaFilteredItems);
-            setSearchData(pizzaFilteredItems);
-
-            dispatch(setModel('pizzaItems', pizzaFilteredItems))
-            dispatch(setModel('burgerItems', burgerFilteredItems))
-            dispatch(setModel('sandwichItems', sandwichFilteredItems))
-            dispatch(setModel('friesItems', friesFilteredItems))
-            dispatch(setModel('drinkItems', drinkFilteredItems))
-        }
-
         getTable();
-        getMenuItems();
     }, [])
 
     const handleQty = (actionType, record) => {
@@ -380,7 +375,7 @@ const TableCard = () => {
             })
             dispatch(setModel('drinkItems', newDrinkItems))
 
-            
+
             dispatch(setModel('tableData', tableData))
             setShowSaveOrderModal(false)
             setOrderDrawer(false)
@@ -390,8 +385,26 @@ const TableCard = () => {
         return;
     }
 
+    const handleSetTableOrder = (table) => {
+        setSelectedTable(table)
+        setShowTableOrderModal(true)
+    }
+
+    const handleClearTableOrder = () => {
+        setSelectedTable({})
+        setShowTableOrderModal(false)
+    }
+
     return (
         <Spin spinning={isLoading}>
+            {
+                showTableOrderModal &&
+                <OrderForSelectedTable 
+                    selectedTable={selectedTable}
+                    showTableOrderModal={showTableOrderModal}
+                    handleClearTableOrder={handleClearTableOrder}
+                />
+            }
             {
                 showSaveOrderModal &&
                 <ConfirmModal
@@ -410,7 +423,8 @@ const TableCard = () => {
                     onCancel={() => { setShowSaveOrderModal(false) }}
                     Children={
                         <>
-                            <div className="d-flex justify-content-end all-margin">
+                            <div className="d-flex justify-content-between align-item-center all-margin">
+                                <Title level={5} style={{ margin: '0' }}>Total Price: {totalPrice}</Title>
                                 <Switch
                                     defaultChecked
                                     onChange={(chk) => {
@@ -425,6 +439,7 @@ const TableCard = () => {
                             </div>
                             <TableOrder
                                 selectedRows={Object.values(selectedRowMap)}
+                                setTotalPrice={setTotalPrice}
                             />
                         </>
                     }
@@ -466,27 +481,20 @@ const TableCard = () => {
                                             </>
                                         }
                                         actions={
-                                            currPath !== 'tableSetting' ?
+                                            currPath !== 'table' ?
                                                 (
                                                     ins.is_occupied ? ([
-                                                        <div className="d-flex justify-content-around">
+                                                        <div 
+                                                            className="d-flex justify-content-around"
+                                                        >
                                                             <Button
-                                                                name="Pay"
+                                                                name="View Order"
                                                                 className="grey-btn"
-                                                                key="pay-bill"
-                                                                icon={<DollarOutlined />}
+                                                                key="view-order"
                                                                 size="small"
                                                                 type="primary"
-                                                                onClick={() => { }}
-                                                            />
-                                                            <Button
-                                                                name="Edit Order"
-                                                                className="grey-btn"
-                                                                key="edit-order"
-                                                                icon={<EditOutlined />}
-                                                                size="small"
-                                                                type="primary"
-                                                                onClick={() => { }}
+                                                                icon={<FormOutlined  />}
+                                                                onClick={() => {handleSetTableOrder(ins)}}
                                                             />
                                                         </div>
                                                     ]) : ([
@@ -552,7 +560,7 @@ const TableCard = () => {
                                 <div className="d-flex justify-content-end">
                                     <Search
                                         className="search-width"
-                                        placeholder="Search in menu-item"
+                                        placeholder="Search menu-item"
                                         onSearch={onSearch}
                                     />
                                 </div>

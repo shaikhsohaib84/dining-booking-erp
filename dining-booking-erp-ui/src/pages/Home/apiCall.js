@@ -11,3 +11,15 @@ export const deleteTableById = async (tableId=null) => {
 export const createOrderByTableId = async (data) => {
     return await POST(`create-order/`, data)
 }
+
+export const getOrderByTableAPI = async (tableToken) => {
+    return await GET(`get-order-by-table-id`, {
+        params: {
+            table_token: tableToken
+        }
+      })
+}
+
+export const removeOrderAPI = async (orderItemId) => {
+    return await DELETE(`cancel-order/${orderItemId}/`)
+}

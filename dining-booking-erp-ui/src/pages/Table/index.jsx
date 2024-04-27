@@ -10,7 +10,7 @@ import { ERROR, ERROR_MESSAGE } from '../../utils/constant';
 import "./index.css"
 import { toastAlert } from '../../utils/toastAlert';
 
-const TableSetting = () => {
+const Table = () => {
     const dispatch = useDispatch()
     const modelState = useSelector((state) => state?.models)
     let { tableData=[] } = modelState;
@@ -51,4 +51,4 @@ const TableSetting = () => {
     )
 }
 
-export default TableSetting;
+export default Table;

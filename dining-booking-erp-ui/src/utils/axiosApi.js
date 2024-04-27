@@ -8,8 +8,8 @@ axios.interceptors.request.use(function (config) {
     return Promise.reject(error);
 });
 
-export const GET = (url, config=[]) => {
-    return axios.get(`${url}`, ...config);
+export const GET = (url, config={}) => {
+    return axios.get(`${url}`, {...config});
 }
 
 export const POST = (url, data, config=[]) => {

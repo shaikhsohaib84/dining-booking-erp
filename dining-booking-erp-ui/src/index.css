@@ -18,6 +18,14 @@ body {
   justify-content: space-around;
 }
 
+.align-item-center {
+  align-items: center;
+}
+
+.align-item-start {
+  align-items: start;
+}
+
 .full-height {
   max-height: 100vh;
 }

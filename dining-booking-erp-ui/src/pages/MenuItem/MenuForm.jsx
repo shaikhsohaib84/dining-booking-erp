@@ -7,12 +7,12 @@ import { Switch } from "../../components/Switch"
 import { Select } from '../../components/Select';
 import { Table } from '../../components/Table';
 import Button from '../../components/Button';
-import { MENU_ITEM_TYPE, NON_VEG, VEG } from '../../utils/constant';
+import { DISH_TYPE, ITEM_TYPE, MENU_ITEM_TYPE, MENU_TYPE, NAME, NON_VEG, RATE, VEG } from '../../utils/constant';
 import { setModel } from '../../redux/action/modelAction';
 
 const menuColumns = [
     {
-      title: 'Name',
+      title: `${NAME}`,
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => {
@@ -22,7 +22,7 @@ const menuColumns = [
       },
     },
     {
-        title: 'Rate',
+        title: `${RATE}`,
         dataIndex: 'rate',
         key: 'rate',
         render: (text, record) => {
@@ -32,7 +32,7 @@ const menuColumns = [
       },
     },
     {
-        title: 'Item Type',
+        title: `${ITEM_TYPE}`,
         dataIndex: 'menu_item',
         key: 'menu_item',
         render: (text, record) => {
@@ -42,7 +42,7 @@ const menuColumns = [
       },
     },
     {
-      title: 'Dish Type',
+      title: MENU_TYPE,
       key: 'menu_type',
       dataIndex: 'menu_type',
       render: (text, record) => {
@@ -96,7 +96,7 @@ export const MenuForm = () => {
             
             <Input 
                 className='all-margin' 
-                placeholder="Name" 
+                placeholder={`${NAME}`} 
                 onChange={(e) => { setName(e.target.value) }} 
             />
             

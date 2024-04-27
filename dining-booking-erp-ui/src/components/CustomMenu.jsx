@@ -20,9 +20,7 @@ function getItem(label, key, icon, children) {
 
 const items = [
   getItem('Home',  'home', <HomeOutlined />),
-  getItem('Table', 'table', <TableOutlined />,[
-    getItem('More',  'tableSetting', <FormOutlined />),
-  ]),
+  getItem('Table', 'table', <TableOutlined />),
   getItem('Menu',  'menu', <MenuOutlined />),
   getItem('Orders','orders', <OrderedListOutlined />),
   getItem('Staff', 'staff', <UserOutlined />),
@@ -40,7 +38,7 @@ const CustomMenu = ({ children }) => {
 
   const menu_switch = {
     'home': () => navigate('/'),
-    'tableSetting': () => navigate('/table-setting'),
+    'table': () => navigate('/table'),
     'menu': () => navigate('/menu'),
   }
 
@@ -83,16 +81,6 @@ const CustomMenu = ({ children }) => {
           >
             {children}
           </Content>
-          <Footer 
-            className='txt-align-center'
-            style={{
-              position: 'fixed',
-              bottom: 0,
-              width: '100%',
-            }}
-          >
-            {APP_NAME} ©{new Date().getFullYear()} Created by Allah
-          </Footer>
         </Layout>
       </Layout>
     </div>

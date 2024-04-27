@@ -2,26 +2,31 @@ import { useDispatch, useSelector } from "react-redux";
 import { Tag } from "antd";
 import { Table } from "../../../components/Table"
 import Button from "../../../components/Button";
-import { NON_VEG, VEG } from "../../../utils/constant";
+import { MENU_TYPE, NAME, NON_VEG, RATE, VEG } from "../../../utils/constant";
 import { setModel } from "../../../redux/action/modelAction";
 import { setGeneric } from "../../../redux/action/genericAction";
+import { useEffect, useState } from "react";
 
-export const TableOrder = () => {
+export const TableOrder = ({
+    setTotalPrice
+}) => {
     const dispatch = useDispatch();
     const genericState = useSelector((state) => state?.generic)
     const modelState   = useSelector((state) => state?.models)
     const { selectedRowMap={} } = genericState;
     const { pizzaItems=[], burgerItems=[], sandwichItems=[], friesItems=[], drinkItems=[] } = modelState;
 
+    const [selectedRows, setSelectedRows] = useState([])
+
     const menuColumns = [
         {
-            title: 'Name',
+            title: `${NAME}`,
             dataIndex: 'name',
             key: 'name',
             render: (text) => <a>{text}</a>,
         },
         {
-            title: 'Rate',
+            title: `${RATE}`,
             dataIndex: 'rate',
             key: 'rate',
             render: (text) => <a>{text}</a>,
@@ -33,7 +38,17 @@ export const TableOrder = () => {
             render: (text) => <a>{text}</a>,
         },
         {
-            title: 'Menu Type',
+            title: 'Price',
+            dataIndex: 'price',
+            key: 'price',
+            render: (text, record) => {
+                return (
+                    <a>{text}</a>
+                )
+            },
+        },
+        {
+            title: `${MENU_TYPE}`,
             key: 'menu_type',
             dataIndex: 'menu_type',
             render: (_, record) => (
@@ -57,6 +72,15 @@ export const TableOrder = () => {
         },
     ];
 
+    useEffect(() => {
+        const data = Object.values(selectedRowMap)
+        const totalPrice = data.reduce((curr, acc) => {
+            return acc?.price + curr
+        }, 0)
+        setTotalPrice(totalPrice)
+        setSelectedRows(data)
+    }, [])
+
     const handleRemoveMenuItem = (selectedMenuItem) => {
         let selectedRowMapCopy = {...selectedRowMap}
         if (selectedMenuItem?.menu_item === 'pizza') {
@@ -64,6 +88,7 @@ export const TableOrder = () => {
             pizzaItemsCopy.filter((ins) => {
                 if (ins?.id == selectedMenuItem?.id) {
                     ins['isSelected'] = false;
+                    ins['price'] = 0;
                 }
                 return ins;
             })
@@ -73,6 +98,7 @@ export const TableOrder = () => {
             burgerItemsCopy.filter((ins) => {
                 if (ins?.id == selectedMenuItem?.id) {
                     ins['isSelected'] = false;
+                    ins['price'] = 0;
                 }
                 return ins;
             })
@@ -82,6 +108,7 @@ export const TableOrder = () => {
             sandwichItemsCopy.filter((ins) => {
                 if (ins?.id == selectedMenuItem?.id) {
                     ins['isSelected'] = false;
+                    ins['price'] = 0;
                 }
                 return ins;
             })
@@ -91,6 +118,7 @@ export const TableOrder = () => {
             friesItemsCopy.filter((ins) => {
                 if (ins?.id == selectedMenuItem?.id) {
                     ins['isSelected'] = false;
+                    ins['price'] = 0;
                 }
                 return ins;
             })
@@ -100,20 +128,26 @@ export const TableOrder = () => {
             drinkItemsCopy.filter((ins) => {
                 if (ins?.id == selectedMenuItem?.id) {
                     ins['isSelected'] = false;
+                    ins['price'] = 0;
                 }
                 return ins;
             })
             dispatch(setModel('drinkItems', drinkItemsCopy))
         }
         delete selectedRowMapCopy[selectedMenuItem?.id]
+        const totalPrice = Object.values(selectedRowMapCopy).reduce((curr, acc) => {
+            return acc?.price + curr
+        }, 0)
         dispatch(setGeneric({selectedRowMap: selectedRowMapCopy}))
+        setSelectedRows(Object.values(selectedRowMapCopy))
+        setTotalPrice(totalPrice)
     }
 
     return (
         <>
             <Table
                 columns={menuColumns}
-                data={Object.values(selectedRowMap)}
+                data={selectedRows}
                 scroll={{
                     y: 300,
                 }}  

@@ -10,11 +10,11 @@ import Button from "../../components/Button";
 import { MenuItemSelection } from "./MenuItemSelection";
 import { toastAlert } from "../../utils/toastAlert";
 import { localDateTime, menuItemFilter } from "../../utils/common";
-import { SUCCESS, ERROR, ERROR_MESSAGE, MENU_ITEMS_ADDED_SUCCESSFULLY, VEG, NON_VEG, MENU_DELETED_SUCESSFULLY, MENU_EDIT_SUCCESSFULLY } from "../../utils/constant";
+import { SUCCESS, ERROR, ERROR_MESSAGE, MENU_ITEMS_ADDED_SUCCESSFULLY, VEG, NON_VEG, MENU_DELETED_SUCESSFULLY, MENU_EDIT_SUCCESSFULLY, NAME, ITEM_NAME, ITEM_RATE, ADD_ITEM, ADD_NEW_ITEM, RATE, MENU_TYPE } from "../../utils/constant";
 import { addMenuItemAPI, deleteMenuAPI, getMenuItemsAPI, handleEditMenuAPI } from "./apiCall";
-import "./index.css";
 import { ConfirmModal } from "../../components/ConfirmModal";
 import { Input } from "../../components/Input";
+import "./index.css";
 const { Title } = Typography;
 
 const MenuItem = () => {
@@ -33,13 +33,13 @@ const MenuItem = () => {
 
     const menuColumns = [
         {
-            title: 'Name',
+            title: `${NAME}`,
             dataIndex: 'name',
             key: 'name',
             render: (text) => <a>{text}</a>,
         },
         {
-            title: 'Rate',
+            title: `${RATE}`,
             dataIndex: 'rate',
             key: 'rate',
             render: (text) => <a>{text}</a>,
@@ -51,7 +51,7 @@ const MenuItem = () => {
             render: (_, record) => <a>{localDateTime(record.created_at)}</a>
         },
         {
-            title: 'Menu Type',
+            title: `${MENU_TYPE}`,
             key: 'menu_type',
             dataIndex: 'menu_type',
             render: (_, record) => (
@@ -240,7 +240,6 @@ const MenuItem = () => {
     const handleSetMenuType = (updatedName) => {
         setSelectedMenu({...selectedMenu, ['menu_type']: updatedName})
     }
-    console.log(selectedMenu);
     
     return (
         <>
@@ -259,12 +258,12 @@ const MenuItem = () => {
                         Children={
                             <Space align="baseline">
                                 <Input
-                                    placeholder="Item name"
+                                    placeholder={ITEM_NAME}
                                     defaultValue={selectedMenu?.name}
                                     onChange={(e) => { handleSetMenuName(e.target.value) }}
                                 />
                                 <Input
-                                    placeholder="Item rate"
+                                    placeholder={ITEM_RATE}
                                     defaultValue={selectedMenu?.rate}
                                     onChange={(e) => { handleSetMenuRate(e.target.value) }}
                                 />
@@ -298,7 +297,7 @@ const MenuItem = () => {
             }
             <div className="d-flex justify-content-between">
                 <Button
-                    name="Add Item"
+                    name={ADD_ITEM}
                     className='primary-btn'
                     size="middle"
                     type="primary"
@@ -322,7 +321,7 @@ const MenuItem = () => {
             </div>
 
             <Drawer
-                title="Add New Item"
+                title={ADD_NEW_ITEM}
                 onClose={handleDrawer}
                 open={showDrawer}
                 extra={

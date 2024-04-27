@@ -34,7 +34,12 @@ Blocker's and solution's:
 
   Display bill price on Home > occupied-table.
 
-- Bug fix
+- Bug fix - High Priority
+
+  while creating order for selected table on table tab, qty will always be 1 not 0.
+
+- Bug fix - Low Priority 
+
   After selecting the menu tab, refresh the page selected tab not showing
 
   While adding new menu, ask which one to set in menu-list

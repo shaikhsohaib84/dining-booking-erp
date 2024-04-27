@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css'
 const LoadingFallback = () => <div>Loading...</div>;
 
 const Home         = lazy(() => import('./pages/Home'));
-const TableSetting = lazy(() => import('./pages/Table'));
+const Table        = lazy(() => import('./pages/Table'));
 const MenuItem     = lazy(() => import('./pages/MenuItem'))
 
 function PrintLocation() {
@@ -28,11 +28,11 @@ export default function App() {
       <PrintLocation />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
-            <Route path="/" element={<Home/>}/>
-            <Route path="/table-setting" element={<TableSetting />}/>
-             <Route path="/menu" element={<MenuItem />}/>
-            {/* <Route path="/orders" element={<TableSetting />}/>
-            <Route path="/staff" element={<TableSetting />}/>  */}
+            <Route  path="/"      element={<Home/>}/>
+            <Route  path="/table" element={<Table />}/>
+            <Route  path="/menu"  element={<MenuItem />}/>
+            {/* <Route path="/orders" element={<table />}/>
+            <Route path="/staff" element={<table />}/>  */}
           </Routes>
         </Suspense>
       </CustomMenu>
