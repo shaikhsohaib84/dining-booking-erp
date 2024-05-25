@@ -274,13 +274,48 @@ export const OrderForSelectedTable = ({
             toastAlert(ERROR_MESSAGE, ERROR);
             return 
         } else {
-            filterTableOrderAPIData(data)
-            console.log({
-                'prev order data': data,
-                'searchData': searchData
+            let menuItemsMapper = {
+                'pizza': pizzaItems,
+                'burger': burgerItems,
+                'sandwich': sandwichItems,
+                'fries': friesItems,
+                'drink': drinkItems
+            }
+
+            data.filter((ins) => {
+                setSelectedOrders(ins, menuItemsMapper)
             })
+
+            filterTableOrderAPIData(data)
         }
         setIsLoading(false)
+    }
+
+    const setSelectedOrders = (ins, menuItemsMapper) => {
+        // binary search for selection(check-box) of orders from menu list.
+        const {menu: { id, menu_item }, qty} = ins;
+        let menuData = menuItemsMapper[menu_item]
+        const toSearchId = id;
+        
+        let left  = 0;
+        let right = menuData.length-1;
+        
+        while (left <= right) {
+          const mid = Math.floor(left+(right - left) / 2);
+          if (menuData[mid]['id'] == toSearchId) {
+            menuData[mid]['isSelected'] = true;
+            menuData[mid]['qty'] = qty;
+            menuData[mid]['price'] = qty*menuData[mid]['rate'];
+            return menuItemsMapper;
+          }
+          
+          if (toSearchId < menuData[mid]['id']) {
+            right = mid-1;
+          } else {
+            left = mid+1;
+          }
+        }
+        return menuItemsMapper;
     }
 
     const filterTableOrderAPIData = (tableOrders=[]) => {
@@ -413,7 +448,7 @@ export const OrderForSelectedTable = ({
             />
         )
     }
-
+    console.log(orders);
     return (
         <Spin spinning={isLoading}>
             <Drawer
