@@ -212,6 +212,19 @@ const TableCard = () => {
     ];
 
     useEffect(() => {
+        // clean up logic for menu list 
+        // selected menu's will be un-selected
+        // qty will be set to 0
+        if (openOrderDrawer === false) {
+            setSearchData(searchData.filter((ins) => {
+                ins['isSelected'] = false;
+                ins['qty'] = 0
+                return ins;
+            }))
+        }
+    }, [openOrderDrawer, showTableOrderModal])
+
+    useEffect(() => {
         setMenuItemData(pizzaItems);
         setSearchData(pizzaItems);
 
@@ -395,6 +408,7 @@ const TableCard = () => {
         setShowTableOrderModal(false)
     }
 
+    
     return (
         <Spin spinning={isLoading}>
             {
@@ -403,6 +417,10 @@ const TableCard = () => {
                     selectedTable={selectedTable}
                     showTableOrderModal={showTableOrderModal}
                     handleClearTableOrder={handleClearTableOrder}
+                    menuItemData={menuItemData}
+                    searchData={searchData}
+                    setMenuItemData={setMenuItemData}
+                    setSearchData={setSearchData}
                 />
             }
             {

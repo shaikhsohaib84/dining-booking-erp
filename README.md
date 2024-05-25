@@ -19,6 +19,9 @@ Blocker's and solution's:
 
   $ pip install mysqlclient
 
+- ### Current Ongoing Work
+  On the Home page > view order, select the checkbox for previouslly selected orders and also new selection should work.
+
 - ToDo
   While deleting table, provide option to transfer order to another table. If the selected table is occupied.
 

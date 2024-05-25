@@ -1,20 +1,39 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Space, Spin, Tag } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { Checkbox, Space, Spin, Tag } from "antd";
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { Table } from "../../../components/Table.jsx";
 import { Drawer } from "../../../components/Drawer.jsx";
 import Button from "../../../components/Button.jsx";
 import { toastAlert } from "../../../utils/toastAlert.js";
 import { getOrderByTableAPI, removeOrderAPI } from "../apiCall.js";
-import { AMOUNT, ERROR, ERROR_MESSAGE, ITEM, NAME, NON_VEG, QTY, RATE, REMOVED_SUCCESSFULLY, REMOVE_ORDER, SUCCESS, TYPE, VEG } from "../../../utils/constant.js";
+import { AMOUNT, ERROR, ERROR_MESSAGE, ITEM, MENU_TYPE, NAME, NON_VEG, QTY, RATE, REMOVED_SUCCESSFULLY, REMOVE_ORDER, SUCCESS, TYPE, VEG } from "../../../utils/constant.js";
+import { Search } from "../../../components/Search.jsx";
+import { MenuItemSelection } from "../../MenuItem/MenuItemSelection.jsx";
+import { setGeneric } from "../../../redux/action/genericAction.js";
+import { setModel } from "../../../redux/action/modelAction.js";
+import { localDateTime } from "../../../utils/common.js";
 
 export const OrderForSelectedTable = ({
     selectedTable,
     showTableOrderModal,
-    handleClearTableOrder
+    handleClearTableOrder,
+    menuItemData,
+    searchData,
+    setMenuItemData,
+    setSearchData,
 }) => {
-    
+    const dispatch = useDispatch()
+
+    const modelState = useSelector((state) => state?.models);
+    const genericState = useSelector((state) => state?.generic);
+    const { currentMenuTab = 'pizza', selectedRowMap = {} } = genericState;
+    const { pizzaItems = [], burgerItems = [], sandwichItems = [], friesItems = [], drinkItems = [] } = modelState;
+
+    const [isLoading, setIsLoading]         = useState(true);
+    const [addOrderModal, setAddOrderModal] = useState(true);
+    const [orders, setOrders]               = useState([])
+
     const orderColumns = [
         {
             title: NAME,
@@ -88,19 +107,163 @@ export const OrderForSelectedTable = ({
         }
     ]
 
-    const modelState = useSelector((state) => state?.models);
-    const { pizzaItems = [], burgerItems = [], sandwichItems = [], friesItems = [], drinkItems = [] } = modelState;
-
-    const [isLoading, setIsLoading]         = useState(true);
-    const [addOrderModal, setAddOrderModal] = useState(true);
-    const [orders, setOrders]               = useState([])
-    const [menuItemData, setMenuItemData]   = useState([]);
-    const [searchData, setSearchData]       = useState([]);
+    const menuColumns = [
+        {
+            title: '',
+            dataIndex: '',
+            key: '',
+            render: (text, record) => {
+                return (
+                    <Checkbox
+                        checked={record?.isSelected}
+                        onChange={(e) => {
+                            if (currentMenuTab === 'pizza') {
+                                const newPizzaItems = pizzaItems.map((ins) => {
+                                    if (ins?.id == record?.id) {
+                                        ins.isSelected = !ins.isSelected;
+                                        if (ins.isSelected) {
+                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
+                                        } else {
+                                            let hashMapCopy = { ...selectedRowMap };
+                                            delete hashMapCopy[record.id]
+                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
+                                        }
+                                    }
+                                    return ins;
+                                })
+                                dispatch(setModel('pizzaItems', newPizzaItems))
+                            } else if (currentMenuTab === 'burger') {
+                                const newBurgerItems = burgerItems.map((ins) => {
+                                    if (ins?.id == record?.id) {
+                                        ins.isSelected = !ins.isSelected;
+                                        if (ins.isSelected) {
+                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
+                                        } else {
+                                            let hashMapCopy = { ...selectedRowMap };
+                                            delete hashMapCopy[record.id]
+                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
+                                        }
+                                    }
+                                    return ins;
+                                })
+                                dispatch(setModel('burgerItems', newBurgerItems))
+                            } else if (currentMenuTab === 'sandwich') {
+                                const newSandwichItems = sandwichItems.map((ins) => {
+                                    if (ins?.id == record?.id) {
+                                        ins.isSelected = !ins.isSelected;
+                                        if (ins.isSelected) {
+                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
+                                        } else {
+                                            let hashMapCopy = { ...selectedRowMap };
+                                            delete hashMapCopy[record.id]
+                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
+                                        }
+                                    }
+                                    return ins;
+                                })
+                                dispatch(setModel('sandwichItems', newSandwichItems))
+                            } else if (currentMenuTab === 'fries') {
+                                const newFriesItems = friesItems.map((ins) => {
+                                    if (ins?.id == record?.id) {
+                                        ins.isSelected = !ins.isSelected;
+                                        if (ins.isSelected) {
+                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
+                                        } else {
+                                            let hashMapCopy = { ...selectedRowMap };
+                                            delete hashMapCopy[record.id]
+                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
+                                        }
+                                    }
+                                    return ins;
+                                })
+                                dispatch(setModel('friesItems', newFriesItems))
+                            } else {
+                                const newDrinkItems = drinkItems.map((ins) => {
+                                    if (ins?.id == record?.id) {
+                                        ins.isSelected = !ins.isSelected;
+                                        if (ins.isSelected) {
+                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
+                                        } else {
+                                            let hashMapCopy = { ...selectedRowMap };
+                                            delete hashMapCopy[record.id]
+                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
+                                        }
+                                    }
+                                    return ins;
+                                })
+                                dispatch(setModel('drinkItems', newDrinkItems))
+                            }
+                        }}
+                    />
+                )
+            },
+        },
+        {
+            title: `${NAME}`,
+            dataIndex: 'name',
+            key: 'name',
+            render: (text) => <a>{text}</a>,
+        },
+        {
+            title: `${RATE}`,
+            dataIndex: 'rate',
+            key: 'rate',
+            render: (text) => <a>{text}</a>,
+        },
+        {
+            title: 'Price',
+            dataIndex: 'price',
+            key: 'price',
+            render: (text, record) => {
+                const qtyByRate = record?.rate * record?.qty
+                return (
+                    <a>{qtyByRate}</a>
+                )
+            },
+        },
+        {
+            title: 'Created At',
+            dataIndex: 'created_at',
+            key: 'created_at',
+            render: (_, record) => <a>{localDateTime(record.created_at)}</a>
+        },
+        {
+            title: `${MENU_TYPE}`,
+            key: 'menu_type',
+            dataIndex: 'menu_type',
+            render: (_, record) => (
+                <Tag color={record?.menu_type === "veg" ? 'green' : 'red'}>
+                    {record?.menu_type === "veg" ? VEG : NON_VEG}
+                </Tag>
+            ),
+        },
+        {
+            title: 'Qty',
+            key: 'qty',
+            dataIndex: 'qty',
+            render: (_, record) => {
+                return (
+                    <div className="d-flex">
+                        <Space size="small">
+                            <Button
+                                disabled={record?.isSelected == false}
+                                icon={<PlusOutlined />}
+                                onClick={() => { handleQty('add', record) }}
+                            />
+                            <span>{record?.qty}</span>
+                            <Button
+                                disabled={record?.isSelected == false}
+                                icon={<MinusOutlined />}
+                                onClick={() => { handleQty('minus', record) }}
+                            />
+                        </Space>
+                    </div>
+                )
+            }
+        },
+    ];
 
     useEffect(() => {
-        setMenuItemData(pizzaItems);
-        setSearchData(pizzaItems);
-
         getTableOrderByTableId()
     }, [])
     
@@ -112,6 +275,10 @@ export const OrderForSelectedTable = ({
             return 
         } else {
             filterTableOrderAPIData(data)
+            console.log({
+                'prev order data': data,
+                'searchData': searchData
+            })
         }
         setIsLoading(false)
     }
@@ -131,6 +298,57 @@ export const OrderForSelectedTable = ({
             })
         })
         setOrders(tempArr)
+    }
+
+    const handleQty = (actionType, record) => {
+        let count = record?.qty
+        if (actionType === 'add') {
+            count += 1
+        } else if (actionType === 'minus' && count > 0) {
+            count -= 1
+        }
+
+        if (currentMenuTab === 'pizza') {
+            const newPizzaItems = pizzaItems.map((ins) => {
+                if (ins?.id == record?.id) {
+                    ins['qty'] = count;
+                }
+                return ins;
+            })
+            dispatch(setModel('pizzaItems', newPizzaItems))
+        } else if (currentMenuTab === 'burger') {
+            const newBurgerItems = burgerItems.map((ins) => {
+                if (ins?.id == record?.id) {
+                    ins['qty'] = count;
+                }
+                return ins;
+            })
+            dispatch(setModel('burgerItems', newBurgerItems))
+        } else if (currentMenuTab === 'sandwich') {
+            const newSandwichItems = sandwichItems.map((ins) => {
+                if (ins?.id == record?.id) {
+                    ins['qty'] = count;
+                }
+                return ins;
+            })
+            dispatch(setModel('sandwichItems', newSandwichItems))
+        } else if (currentMenuTab === 'fries') {
+            const newFriesItems = friesItems.map((ins) => {
+                if (ins?.id == record?.id) {
+                    ins['qty'] = count;
+                }
+                return ins;
+            })
+            dispatch(setModel('friesItems', newFriesItems))
+        } else {
+            const newDrinkItems = drinkItems.map((ins) => {
+                if (ins?.id == record?.id) {
+                    ins['qty'] = count;
+                }
+                return ins;
+            })
+            dispatch(setModel('drinkItems', newDrinkItems))
+        }
     }
 
     const handleAddQty = (selectedOrder) => {
@@ -225,7 +443,7 @@ export const OrderForSelectedTable = ({
                 extra={
                     <Space>
                         <Button
-                            name="Add Order"
+                            name="Update Order"
                             type="link"
                             disabled={!orders.length}
                             onClick={() => { setAddOrderModal(!addOrderModal)}}
