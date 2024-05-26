@@ -28,7 +28,7 @@ export const TYPE                          = "Type"
 export const MENU_TYPE                     = "Menu Type"
 export const DISH_TYPE                     = "Dish Type"
 export const QTY                           = "Qty"
-
+export const PRICE                         = "Price"
 
 export const PATH_URL_MAPPER = {
     "/": "home",

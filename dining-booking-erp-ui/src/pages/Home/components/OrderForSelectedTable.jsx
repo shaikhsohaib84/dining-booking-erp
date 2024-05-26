@@ -7,15 +7,15 @@ import { Drawer } from "../../../components/Drawer.jsx";
 import Button from "../../../components/Button.jsx";
 import { toastAlert } from "../../../utils/toastAlert.js";
 import { getOrderByTableAPI, removeOrderAPI } from "../apiCall.js";
-import { AMOUNT, ERROR, ERROR_MESSAGE, ITEM, MENU_TYPE, NAME, NON_VEG, QTY, RATE, REMOVED_SUCCESSFULLY, REMOVE_ORDER, SUCCESS, TYPE, VEG } from "../../../utils/constant.js";
+import { ERROR, ERROR_MESSAGE, ITEM, MENU_TYPE, NAME, NON_VEG, PRICE, QTY, RATE, REMOVED_SUCCESSFULLY, REMOVE_ORDER, SUCCESS, TYPE, VEG } from "../../../utils/constant.js";
 import { Search } from "../../../components/Search.jsx";
 import { MenuItemSelection } from "../../MenuItem/MenuItemSelection.jsx";
 import { setGeneric } from "../../../redux/action/genericAction.js";
 import { setModel } from "../../../redux/action/modelAction.js";
 import { localDateTime } from "../../../utils/common.js";
+import { ConfirmModal } from "../../../components/ConfirmModal.jsx";
 
 export const OrderForSelectedTable = ({
-    selectedTable,
     showTableOrderModal,
     handleClearTableOrder,
     menuItemData,
@@ -27,12 +27,20 @@ export const OrderForSelectedTable = ({
 
     const modelState = useSelector((state) => state?.models);
     const genericState = useSelector((state) => state?.generic);
-    const { currentMenuTab = 'pizza', selectedRowMap = {} } = genericState;
+    const { currentMenuTab = 'pizza', selectedRowMap = {}, selectedTable = {} } = genericState;
     const { pizzaItems = [], burgerItems = [], sandwichItems = [], friesItems = [], drinkItems = [] } = modelState;
 
     const [isLoading, setIsLoading]         = useState(true);
-    const [addOrderModal, setAddOrderModal] = useState(true);
+    const [addOrderModal, setAddOrderModal] = useState(false);
     const [orders, setOrders]               = useState([])
+
+    let menuItemsMapper = {
+        'pizza': pizzaItems,
+        'burger': burgerItems,
+        'sandwich': sandwichItems,
+        'fries': friesItems,
+        'drink': drinkItems
+    }
 
     const orderColumns = [
         {
@@ -72,12 +80,12 @@ export const OrderForSelectedTable = ({
                         <Space size="small">
                             <Button
                                 icon={<PlusOutlined />}
-                                onClick={() => { handleAddQty(record) }}
+                                onClick={() => { handleQty('add',record) }}
                             />
                             <span>{record?.qty}</span>
                             <Button
                                 icon={<MinusOutlined />}
-                                onClick={() => { handleMinusQty(record) }}
+                                onClick={() => { handleQty('minus',record) }}
                                 disabled={text == 1}
                             />
                         </Space>
@@ -85,7 +93,7 @@ export const OrderForSelectedTable = ({
             ),
         },
         {
-            title: AMOUNT,
+            title: PRICE,
             dataIndex: 'amount',
             key: 'amount',
             render: (text, record) => (
@@ -117,81 +125,39 @@ export const OrderForSelectedTable = ({
                     <Checkbox
                         checked={record?.isSelected}
                         onChange={(e) => {
+                            const updatedMenuArray = menuItemsMapper[currentMenuTab].map((ins) => {
+                                if (ins?.id == record?.id) {
+                                    ins.isSelected = !ins.isSelected;
+                                    let selectedRowHM = selectedRowMap;
+                                    if (ins.isSelected) {
+                                        selectedRowHM = { ...selectedRowHM, [record['id']]: {
+                                            'tableId': selectedTable?.id, 
+                                            'menuId': record?.id,
+                                            'table_token': selectedTable?.table_token,
+                                            'name': record?.name,
+                                            'type': record?.menu_type,
+                                            'item': record?.menu_item,
+                                            'rate': record?.rate,
+                                            'qty': record?.qty,
+                                        } }
+                                    } else {
+                                        delete selectedRowHM[record.id]
+                                    }
+                                    dispatch(setGeneric({ selectedRowMap: selectedRowHM }))
+                                }
+                                return ins;
+                            })
+
                             if (currentMenuTab === 'pizza') {
-                                const newPizzaItems = pizzaItems.map((ins) => {
-                                    if (ins?.id == record?.id) {
-                                        ins.isSelected = !ins.isSelected;
-                                        if (ins.isSelected) {
-                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
-                                        } else {
-                                            let hashMapCopy = { ...selectedRowMap };
-                                            delete hashMapCopy[record.id]
-                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
-                                        }
-                                    }
-                                    return ins;
-                                })
-                                dispatch(setModel('pizzaItems', newPizzaItems))
+                                dispatch(setModel('pizzaItems', updatedMenuArray))
                             } else if (currentMenuTab === 'burger') {
-                                const newBurgerItems = burgerItems.map((ins) => {
-                                    if (ins?.id == record?.id) {
-                                        ins.isSelected = !ins.isSelected;
-                                        if (ins.isSelected) {
-                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
-                                        } else {
-                                            let hashMapCopy = { ...selectedRowMap };
-                                            delete hashMapCopy[record.id]
-                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
-                                        }
-                                    }
-                                    return ins;
-                                })
-                                dispatch(setModel('burgerItems', newBurgerItems))
+                                dispatch(setModel('burgerItems', updatedMenuArray))
                             } else if (currentMenuTab === 'sandwich') {
-                                const newSandwichItems = sandwichItems.map((ins) => {
-                                    if (ins?.id == record?.id) {
-                                        ins.isSelected = !ins.isSelected;
-                                        if (ins.isSelected) {
-                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
-                                        } else {
-                                            let hashMapCopy = { ...selectedRowMap };
-                                            delete hashMapCopy[record.id]
-                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
-                                        }
-                                    }
-                                    return ins;
-                                })
-                                dispatch(setModel('sandwichItems', newSandwichItems))
+                                dispatch(setModel('sandwichItems', updatedMenuArray))
                             } else if (currentMenuTab === 'fries') {
-                                const newFriesItems = friesItems.map((ins) => {
-                                    if (ins?.id == record?.id) {
-                                        ins.isSelected = !ins.isSelected;
-                                        if (ins.isSelected) {
-                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
-                                        } else {
-                                            let hashMapCopy = { ...selectedRowMap };
-                                            delete hashMapCopy[record.id]
-                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
-                                        }
-                                    }
-                                    return ins;
-                                })
-                                dispatch(setModel('friesItems', newFriesItems))
+                                dispatch(setModel('friesItems', updatedMenuArray))
                             } else {
-                                const newDrinkItems = drinkItems.map((ins) => {
-                                    if (ins?.id == record?.id) {
-                                        ins.isSelected = !ins.isSelected;
-                                        if (ins.isSelected) {
-                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
-                                        } else {
-                                            let hashMapCopy = { ...selectedRowMap };
-                                            delete hashMapCopy[record.id]
-                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
-                                        }
-                                    }
-                                    return ins;
-                                })
-                                dispatch(setModel('drinkItems', newDrinkItems))
+                                dispatch(setModel('drinkItems', updatedMenuArray))
                             }
                         }}
                     />
@@ -252,7 +218,7 @@ export const OrderForSelectedTable = ({
                             />
                             <span>{record?.qty}</span>
                             <Button
-                                disabled={record?.isSelected == false}
+                                disabled={record?.isSelected == false || record?.qty == 1}
                                 icon={<MinusOutlined />}
                                 onClick={() => { handleQty('minus', record) }}
                             />
@@ -274,14 +240,6 @@ export const OrderForSelectedTable = ({
             toastAlert(ERROR_MESSAGE, ERROR);
             return 
         } else {
-            let menuItemsMapper = {
-                'pizza': pizzaItems,
-                'burger': burgerItems,
-                'sandwich': sandwichItems,
-                'fries': friesItems,
-                'drink': drinkItems
-            }
-
             data.filter((ins) => {
                 setSelectedOrders(ins, menuItemsMapper)
             })
@@ -319,98 +277,58 @@ export const OrderForSelectedTable = ({
     }
 
     const filterTableOrderAPIData = (tableOrders=[]) => {
-        let tempArr = []
+        let selectedMenuHM = {}
         tableOrders.filter((ins) => {
             const { id, table_token, qty, menu:{name, menu_type, menu_item, rate} } = ins;
-            tempArr.push({
-                id, 
+            selectedMenuHM[ins?.menu?.id] = {
+                'tableId': id, 
+                'menuId': ins?.menu?.id,
                 table_token,
                 name,
                 'type': menu_type,
                 'item': menu_item,
                 rate,
                 qty,
-            })
+            }
         })
-        setOrders(tempArr)
+        dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, ...selectedMenuHM} }))
     }
 
     const handleQty = (actionType, record) => {
-        let count = record?.qty
+        // handleQty function is being re-used for view-order and view-order > check-out 
+        let count = record?.qty;
+        let selectedMenuHM = selectedRowMap;
         if (actionType === 'add') {
             count += 1
-        } else if (actionType === 'minus' && count > 0) {
+        } else if (actionType === 'minus') {
+            if (count <= 0) return;
             count -= 1
         }
+        if (record?.menuId) {
+            // this check is for view-order > check-out order view
+            selectedMenuHM[record?.menuId]['qty'] = count
+        } else {
+            selectedMenuHM[record?.id]['qty'] = count
+        }
+        const updatedMenuList = menuItemsMapper[currentMenuTab].map((ins) => {
+            if (ins?.id == record?.id) {
+                ins['qty'] = count;
+            }
+            return ins;
+        })
 
         if (currentMenuTab === 'pizza') {
-            const newPizzaItems = pizzaItems.map((ins) => {
-                if (ins?.id == record?.id) {
-                    ins['qty'] = count;
-                }
-                return ins;
-            })
-            dispatch(setModel('pizzaItems', newPizzaItems))
+            dispatch(setModel('pizzaItems', updatedMenuList))
         } else if (currentMenuTab === 'burger') {
-            const newBurgerItems = burgerItems.map((ins) => {
-                if (ins?.id == record?.id) {
-                    ins['qty'] = count;
-                }
-                return ins;
-            })
-            dispatch(setModel('burgerItems', newBurgerItems))
+            dispatch(setModel('burgerItems', updatedMenuList))
         } else if (currentMenuTab === 'sandwich') {
-            const newSandwichItems = sandwichItems.map((ins) => {
-                if (ins?.id == record?.id) {
-                    ins['qty'] = count;
-                }
-                return ins;
-            })
-            dispatch(setModel('sandwichItems', newSandwichItems))
+            dispatch(setModel('sandwichItems', updatedMenuList))
         } else if (currentMenuTab === 'fries') {
-            const newFriesItems = friesItems.map((ins) => {
-                if (ins?.id == record?.id) {
-                    ins['qty'] = count;
-                }
-                return ins;
-            })
-            dispatch(setModel('friesItems', newFriesItems))
+            dispatch(setModel('friesItems', updatedMenuList))
         } else {
-            const newDrinkItems = drinkItems.map((ins) => {
-                if (ins?.id == record?.id) {
-                    ins['qty'] = count;
-                }
-                return ins;
-            })
-            dispatch(setModel('drinkItems', newDrinkItems))
+            dispatch(setModel('drinkItems', updatedMenuList))
         }
-    }
-
-    const handleAddQty = (selectedOrder) => {
-        let orderCopy = [...orders]
-        orderCopy.filter((ins) => {
-            if (ins?.id == selectedOrder.id) {
-                ins.qty += 1
-            }
-            return ins;
-        })
-        setOrders(orderCopy);
-    }
-
-    const handleMinusQty = (selectedOrder) => {
-        let orderCopy = [...orders]
-        debugger
-        orderCopy.filter((ins) => {
-            if (ins?.id == selectedOrder.id) {
-                ins.qty -= 1
-                if (ins.qty <= 0) {
-                    orderCopy.splice(orderCopy.findIndex(a => a.id === ins.id) , 1)
-                    return
-                }
-            }
-            return ins;
-        })
-        setOrders(orderCopy);
+        dispatch(setGeneric({ selectedRowMap: selectedMenuHM }))
     }
 
     const handleRemoveOrder = async (order) => {
@@ -444,20 +362,41 @@ export const OrderForSelectedTable = ({
         return (
             <Table
                 columns={orderColumns}
-                data={orders}
+                data={Object.values(selectedRowMap)}
             />
         )
     }
-    console.log(orders);
+    
     return (
         <Spin spinning={isLoading}>
+            {
+                addOrderModal && (
+                    <ConfirmModal
+                        width={1000}
+                        open={addOrderModal}
+                        title={`Check out order for table ${selectedTable?.tableId}`}
+                        cancelText="Close"
+                        okType="primary"
+                        okText={
+                            <div
+                                onClick={() => { }}
+                            >
+                                Save
+                            </div>
+                        }
+                        onCancel={() => { setAddOrderModal(false) }}
+                        Children={
+                            <TableOrderView />
+                        }
+                    />
+                )
+            }
             <Drawer
                 title={`Order for table no. ${selectedTable?.tableId}`}
                 open={showTableOrderModal}
                 onClose={handleClearTableOrder}
                 width="100%"
                 Children={
-                    // <TableOrderView />
                     <>
                         <div className="d-flex justify-content-end">
                             <Search
@@ -478,9 +417,9 @@ export const OrderForSelectedTable = ({
                 extra={
                     <Space>
                         <Button
-                            name="Update Order"
+                            name="Check Out"
                             type="link"
-                            disabled={!orders.length}
+                            disabled={!Object.keys(selectedRowMap).length}
                             onClick={() => { setAddOrderModal(!addOrderModal)}}
                         />
                     </Space>

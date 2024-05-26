@@ -24,8 +24,8 @@ const Home = () => {
             }
             data = data.filter((ins) => {
                 ins['key'] = ins.id
-                ins['qty'] = 0
-                ins['price'] = 0
+                ins['qty'] = 1
+                ins['price'] = ins?.rate
                 ins['isSelected'] = false
                 return ins
             })

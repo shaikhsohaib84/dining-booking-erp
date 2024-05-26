@@ -16,24 +16,23 @@ import { Drawer } from "../../../components/Drawer.jsx";
 import { Search } from "../../../components/Search.jsx";
 import { Switch } from "../../../components/Switch.jsx";
 import { ConfirmModal } from "../../../components/ConfirmModal.jsx";
+import { OrderForSelectedTable } from "./OrderForSelectedTable.jsx";
 import { MenuItemSelection } from "../../MenuItem/MenuItemSelection.jsx";
 import { createOrderByTableId, deleteTableById, getTableAPI } from "../apiCall.js";
-import { localDateTime, menuItemFilter, tableIdArray } from "../../../utils/common";
 import { toastAlert } from "../../../utils/toastAlert.js";
 import { setModel } from "../../../redux/action/modelAction.js"
-import { getMenuItemsAPI } from "../../MenuItem/apiCall.js";
 import { setGeneric } from "../../../redux/action/genericAction.js";
+import { localDateTime, tableIdArray } from "../../../utils/common";
 import { ERROR_MESSAGE, DELETED_SUCCESSFULLY, VEG, NON_VEG, ERROR, DINING, PARCEL, NO_DATA_AVAILABLE, WARNING, SUCCESS, ORDER_CREATED_SUCESSFULLY, NAME, RATE, MENU_TYPE } from "../../../utils/constant.js"
 import "../index.css";
 import "../../MenuItem/index.css"
-import { OrderForSelectedTable } from "./OrderForSelectedTable.jsx";
 const { Title } = Typography
 
 const TableCard = () => {
     const dispatch = useDispatch();
     const modelState = useSelector((state) => state?.models)
     const genericState = useSelector((state) => state?.generic)
-    const { currPath = '/', currentMenuTab = 'pizza', selectedRowMap = {} } = genericState;
+    const { currPath = '/', currentMenuTab = 'pizza', selectedRowMap = {}, selectedTable = {} } = genericState;
     const { tableData = [], pizzaItems = [], burgerItems = [], sandwichItems = [], friesItems = [], drinkItems = [] } = modelState;
 
     const [totalPrice, setTotalPrice] = useState(0)
@@ -43,7 +42,6 @@ const TableCard = () => {
     const [openOrderDrawer, setOrderDrawer] = useState(false);
     const [showSaveOrderModal, setShowSaveOrderModal] = useState(false);
     const [showTableOrderModal, setShowTableOrderModal] = useState(false);
-    const [selectedTable, setSelectedTable] = useState({});
     const [menuItemData, setMenuItemData] = useState([]);
     const [searchData, setSearchData] = useState([]);
 
@@ -156,14 +154,6 @@ const TableCard = () => {
             key: 'price',
             render: (text, record) => {
                 const qtyByRate = record?.rate * record?.qty
-                // const updatedArr = menuItemData.filter((ins) => {
-                //     if (record?.id == ins?.id) {
-                //         ins['price'] = qtyByRate;
-                //     }
-                //     return ins;
-                // })
-                // setMenuItemData(updatedArr);
-                // setSearchData(updatedArr);
                 return (
                     <a>{qtyByRate}</a>
                 )
@@ -214,13 +204,16 @@ const TableCard = () => {
     useEffect(() => {
         // clean up logic for menu list 
         // selected menu's will be un-selected
-        // qty will be set to 0
-        if (openOrderDrawer === false) {
+        // qty will be set to 1, price
+        debugger;
+        if (showTableOrderModal === false) {
             setSearchData(searchData.filter((ins) => {
                 ins['isSelected'] = false;
-                ins['qty'] = 0
+                ins['qty'] = 1
+                ins['price'] = ins?.rate
                 return ins;
             }))
+            dispatch(setGeneric({ 'selectedRowMap': {} }))
         }
     }, [openOrderDrawer, showTableOrderModal])
 
@@ -298,7 +291,7 @@ const TableCard = () => {
 
     const openCloseConfirmModal = (modalOpen, tableDetail) => {
         setShowConfirmModal(modalOpen);
-        setSelectedTable(tableDetail);
+        dispatch(setGeneric({ selectedTable: tableDetail }));
     }
 
     const handleDeleteTableById = async () => {
@@ -323,8 +316,8 @@ const TableCard = () => {
     }
 
     const handleAddOrder = (ins) => {
+        dispatch(setGeneric({ selectedTable: ins }))
         handleOrderDrawer();
-        setSelectedTable(ins);
     }
 
     const onSearch = (value) => {
@@ -399,12 +392,12 @@ const TableCard = () => {
     }
 
     const handleSetTableOrder = (table) => {
-        setSelectedTable(table)
+        dispatch(setGeneric({ selectedTable: table }))
         setShowTableOrderModal(true)
     }
 
     const handleClearTableOrder = () => {
-        setSelectedTable({})
+        dispatch(setGeneric({}))
         setShowTableOrderModal(false)
     }
 
@@ -414,7 +407,6 @@ const TableCard = () => {
             {
                 showTableOrderModal &&
                 <OrderForSelectedTable 
-                    selectedTable={selectedTable}
                     showTableOrderModal={showTableOrderModal}
                     handleClearTableOrder={handleClearTableOrder}
                     menuItemData={menuItemData}
@@ -474,7 +466,7 @@ const TableCard = () => {
                     onOk={() => { handleDeleteTableById(selectedTable?.id) }}
                     onCancel={() => {
                         setShowConfirmModal(false);
-                        setSelectedTable({});
+                        dispatch(setGeneric({}))
                     }}
                     Children={
                         <p>I'm sure you'll add new table soon...</p>
