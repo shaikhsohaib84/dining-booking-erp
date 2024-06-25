@@ -33,6 +33,7 @@ export const OrderForSelectedTable = ({
     const [isLoading, setIsLoading]         = useState(true);
     const [addOrderModal, setAddOrderModal] = useState(false);
     const [orders, setOrders]               = useState([])
+    const [totalAmount, setTotalAmount]     = useState(0)
 
     let menuItemsMapper = {
         'pizza': pizzaItems,
@@ -76,20 +77,7 @@ export const OrderForSelectedTable = ({
             dataIndex: 'qty',
             key: 'qty',
             render: (text, record) => (
-                <div className="d-flex">
-                        <Space size="small">
-                            <Button
-                                icon={<PlusOutlined />}
-                                onClick={() => { handleQty('add',record) }}
-                            />
-                            <span>{record?.qty}</span>
-                            <Button
-                                icon={<MinusOutlined />}
-                                onClick={() => { handleQty('minus',record) }}
-                                disabled={text == 1}
-                            />
-                        </Space>
-                    </div>
+                <a>{text}</a>
             ),
         },
         {
@@ -237,13 +225,11 @@ export const OrderForSelectedTable = ({
         setIsLoading(true)
         const { status, data } = await getOrderByTableAPI(selectedTable?.table_token)
         if (status !== 200) {
-            toastAlert(ERROR_MESSAGE, ERROR);
-            return 
+            toastAlert(ERROR_MESSAGE, ERROR); 
         } else {
             data.filter((ins) => {
                 setSelectedOrders(ins, menuItemsMapper)
             })
-
             filterTableOrderAPIData(data)
         }
         setIsLoading(false)
@@ -359,10 +345,16 @@ export const OrderForSelectedTable = ({
     }
 
     const TableOrderView = () => {
+        const selectedItemList = Object.values(selectedRowMap);
+        let tempTotalAmount = selectedItemList.reduce((currTotalAmt, item) => {
+            const {rate, qty} = item;
+            return currTotalAmt + (rate*qty);
+        }, 0)
+        setTotalAmount(tempTotalAmount)
         return (
             <Table
                 columns={orderColumns}
-                data={Object.values(selectedRowMap)}
+                data={selectedItemList}
             />
         )
     }
@@ -374,7 +366,7 @@ export const OrderForSelectedTable = ({
                     <ConfirmModal
                         width={1000}
                         open={addOrderModal}
-                        title={`Check out order for table ${selectedTable?.tableId}`}
+                        title={`Check out order for table ${selectedTable?.tableId} with total amount of ${totalAmount}`}
                         cancelText="Close"
                         okType="primary"
                         okText={

@@ -205,7 +205,6 @@ const TableCard = () => {
         // clean up logic for menu list 
         // selected menu's will be un-selected
         // qty will be set to 1, price
-        debugger;
         if (showTableOrderModal === false) {
             setSearchData(searchData.filter((ins) => {
                 ins['isSelected'] = false;
