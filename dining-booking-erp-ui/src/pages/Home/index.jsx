@@ -8,6 +8,7 @@ import { toastAlert } from "../../utils/toastAlert";
 import { menuItemFilter } from "../../utils/common";
 import { ERROR, ERROR_MESSAGE } from "../../utils/constant";
 import { Flex, Spin } from "antd";
+import { setGeneric } from "../../redux/action/genericAction";
 
 const Home = () => {
     const dispatch = useDispatch()
@@ -17,31 +18,35 @@ const Home = () => {
     useEffect(() => {
         const getMenuItems = async () => {
             setLoading(true)
-            let { status, data = [] } = await getMenuItemsAPI();
+            const resp = await getMenuItemsAPI();
+            let { status, data } = resp;
             if (status != 200) {
                 toastAlert(ERROR_MESSAGE, ERROR);
                 return
             }
-            data = data.filter((ins) => {
-                ins['key'] = ins.id
-                ins['qty'] = 1
-                ins['price'] = ins?.rate
-                ins['isSelected'] = false
-                return ins
-            })
+            // data = data.filter((ins) => {
+            //     ins['key'] = ins.id
+            //     ins['qty'] = 1
+            //     ins['price'] = ins?.rate
+            //     ins['isSelected'] = false
+            //     return ins
+            // })
 
-            // util function to segregate the menu data on the basis of items-type(pizza, burger, drinks, sandwich)   
-            const pizzaFilteredItems = menuItemFilter(data, "pizza")
-            const burgerFilteredItems = menuItemFilter(data, "burger")
-            const sandwichFilteredItems = menuItemFilter(data, "sandwich")
-            const friesFilteredItems = menuItemFilter(data, "fries")
-            const drinkFilteredItems = menuItemFilter(data, "drink")
+            console.log('data');
+            console.log(data);
+            // // util function to segregate the menu data on the basis of items-type(pizza, burger, drinks, sandwich)   
+            dispatch(setGeneric({ menuItemMapper: data }))
+            // const pizzaFilteredItems    = Object.values(resp.data['pizza'])    // menuItemFilter(data, "pizza")
+            // const burgerFilteredItems   = Object.values(resp.data['burger'])   // menuItemFilter(data, "burger")
+            // const sandwichFilteredItems = Object.values(resp.data['sandwich']) // menuItemFilter(data, "sandwich")
+            // const friesFilteredItems    = Object.values(resp.data['fries'])    // menuItemFilter(data, "fries")
+            // const drinkFilteredItems    = Object.values(resp.data['drink'])    // menuItemFilter(data, "drink")
 
-            dispatch(setModel('pizzaItems', pizzaFilteredItems))
-            dispatch(setModel('burgerItems', burgerFilteredItems))
-            dispatch(setModel('sandwichItems', sandwichFilteredItems))
-            dispatch(setModel('friesItems', friesFilteredItems))
-            dispatch(setModel('drinkItems', drinkFilteredItems))
+            // dispatch(setModel('pizzaItems', pizzaFilteredItems))
+            // dispatch(setModel('burgerItems', burgerFilteredItems))
+            // dispatch(setModel('sandwichItems', sandwichFilteredItems))
+            // dispatch(setModel('friesItems', friesFilteredItems))
+            // dispatch(setModel('drinkItems', drinkFilteredItems))
             setLoading(false)
         }
         

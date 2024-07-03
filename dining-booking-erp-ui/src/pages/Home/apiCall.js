@@ -1,4 +1,4 @@
-import { DELETE, GET, POST } from "../../utils/axiosApi";
+import { DELETE, GET, POST, PUT } from "../../utils/axiosApi";
 
 export const getTableAPI = async () => {
     return await GET('get-table/');
@@ -22,4 +22,8 @@ export const getOrderByTableAPI = async (tableToken) => {
 
 export const removeOrderAPI = async (orderItemId) => {
     return await DELETE(`cancel-order/${orderItemId}/`)
+}
+
+export const updateOrderAPI = async (tableToken=null, selectedRowMap={}) => {
+    return await PUT(`update-order/${tableToken}`, selectedRowMap)
 }

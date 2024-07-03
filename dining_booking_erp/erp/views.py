@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView, ListCreateAPIView, RetrieveAPIView
 
 # application imports
-from .models import Table, Menu, OrderItem, Billing
+from .models import Table, Menu, OrderItem, Billing, MENU_ITEMS
 from .serializers import TableSerializer, MenuSerializer, OrderItemSerializer, BillingSerializer
 
 ###### Table View ######
@@ -31,7 +31,18 @@ class TableUpdate(UpdateAPIView):
 ###### Menu View ######
 class ListMenu(ListAPIView):
     queryset = Menu.objects.all()
-    serializer_class = MenuSerializer
+    # serializer_class = MenuSerializer
+    
+    def list(self, request):
+        menu_mapper = {item: {} for item, _ in MENU_ITEMS}
+        for menu in list(self.get_queryset()):
+            menu_obj = MenuSerializer(menu).data
+            menu_obj['key']        = menu.id
+            menu_obj['qty']        = 1
+            # menu_obj['price']      = menu.rate
+            menu_obj['isSelected'] = False
+            menu_mapper[menu.menu_item][menu.id] = menu_obj
+        return Response(data=menu_mapper, status=status.HTTP_200_OK)
 
 class AddMenu(CreateAPIView):
     serializer_class = MenuSerializer
@@ -113,6 +124,26 @@ class GetOrderByTableToken(RetrieveAPIView):
 class CancelOrder(DestroyAPIView):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
+
+class UpdateOrder(UpdateAPIView):
+    queryset = ''
+    serializer_class = OrderItemSerializer
+
+    def put(self, request):
+        # request.GET.get('tableToken')
+        tableToken     = request.GET.get('tableToken')
+        selectedRowMap = request.data
+        toDeleteOrders = []
+        if not tableToken or not selectedRowMap: return Response(status=status.HTTP_400_BAD_REQUEST)
+        currOrderList = list(OrderItem.objects.filter(table_token=tableToken).values())
+
+        for currOrder in currOrderList:
+            if currOrder.get('menu_id') not in selectedRowMap:
+                toDeleteOrders.append(currOrder.id)
+            else:
+                pass
+
+        return Response(status=status.HTTP_200_OK)
 
 ###### Billing View ######
 class ListCreateBill(ListCreateAPIView):

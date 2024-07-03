@@ -7,6 +7,7 @@ export const NON_VEG                       = 'Non-veg'
 export const PARCEL                        = 'Parcel'
 export const DINING                        = 'Dining'
 export const ERROR_MESSAGE                 = 'Something went wrong!'
+export const ORDER_UPDATED                 = "Order updated"
 export const NO_DATA_AVAILABLE             = "No data available"
 export const DELETED_SUCCESSFULLY          = 'Deleted successfully'
 export const REMOVED_SUCCESSFULLY          = 'Removed successfully'
@@ -81,8 +82,8 @@ export const menuItems = [
         icon: <img src={"fries.svg"} alt="fries"/> 
     },
     {
-        label: 'Drinks',
-        key: 'drinks',
+        label: 'Drink',
+        key: 'drink',
         icon: <img src={"drink.svg"} alt="drink"/> 
     },
 ];

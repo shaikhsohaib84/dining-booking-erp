@@ -8,15 +8,12 @@ import { setGeneric } from "../../../redux/action/genericAction";
 import { useEffect, useState } from "react";
 
 export const TableOrder = ({
-    setTotalPrice
+    setTotalPrice,
+    setSearchData
 }) => {
     const dispatch = useDispatch();
     const genericState = useSelector((state) => state?.generic)
-    const modelState   = useSelector((state) => state?.models)
-    const { selectedRowMap={} } = genericState;
-    const { pizzaItems=[], burgerItems=[], sandwichItems=[], friesItems=[], drinkItems=[] } = modelState;
-
-    const [selectedRows, setSelectedRows] = useState([])
+    const { selectedRowMap={}, menuItemMapper={}, currentMenuTab='pizza' } = genericState;
 
     const menuColumns = [
         {
@@ -43,7 +40,7 @@ export const TableOrder = ({
             key: 'price',
             render: (text, record) => {
                 return (
-                    <a>{text}</a>
+                    <a>{record?.qty * record?.rate}</a>
                 )
             },
         },
@@ -78,76 +75,30 @@ export const TableOrder = ({
             return acc?.price + curr
         }, 0)
         setTotalPrice(totalPrice)
-        setSelectedRows(data)
     }, [])
 
     const handleRemoveMenuItem = (selectedMenuItem) => {
-        let selectedRowMapCopy = {...selectedRowMap}
-        if (selectedMenuItem?.menu_item === 'pizza') {
-            let pizzaItemsCopy = [...pizzaItems]
-            pizzaItemsCopy.filter((ins) => {
-                if (ins?.id == selectedMenuItem?.id) {
-                    ins['isSelected'] = false;
-                    ins['price'] = 0;
-                }
-                return ins;
-            })
-            dispatch(setModel('pizzaItems', pizzaItemsCopy))
-        } else if (selectedMenuItem?.menu_item === 'burger') {
-            let burgerItemsCopy = [...burgerItems]
-            burgerItemsCopy.filter((ins) => {
-                if (ins?.id == selectedMenuItem?.id) {
-                    ins['isSelected'] = false;
-                    ins['price'] = 0;
-                }
-                return ins;
-            })
-            dispatch(setModel('burgerItems', burgerItemsCopy))
-        } else if (selectedMenuItem?.menu_item === 'sandwich') {
-            let sandwichItemsCopy = [...sandwichItems]
-            sandwichItemsCopy.filter((ins) => {
-                if (ins?.id == selectedMenuItem?.id) {
-                    ins['isSelected'] = false;
-                    ins['price'] = 0;
-                }
-                return ins;
-            })
-            dispatch(setModel('sandwichItems', sandwichItemsCopy))
-        } else if (selectedMenuItem?.menu_item === 'fries') {
-            let friesItemsCopy = [...friesItems]
-            friesItemsCopy.filter((ins) => {
-                if (ins?.id == selectedMenuItem?.id) {
-                    ins['isSelected'] = false;
-                    ins['price'] = 0;
-                }
-                return ins;
-            })
-            dispatch(setModel('friesItems', friesItemsCopy))
-        } else {
-            let drinkItemsCopy = [...drinkItems]
-            drinkItemsCopy.filter((ins) => {
-                if (ins?.id == selectedMenuItem?.id) {
-                    ins['isSelected'] = false;
-                    ins['price'] = 0;
-                }
-                return ins;
-            })
-            dispatch(setModel('drinkItems', drinkItemsCopy))
-        }
+        let selectedRowMapCopy = JSON.parse(JSON.stringify(selectedRowMap))
+        let menuItemMapperCopy = JSON.parse(JSON.stringify(menuItemMapper))
+
+        menuItemMapperCopy[currentMenuTab][selectedMenuItem?.id]['qty'] = 1
+        menuItemMapperCopy[currentMenuTab][selectedMenuItem?.id]['isSelected'] = false
         delete selectedRowMapCopy[selectedMenuItem?.id]
+
         const totalPrice = Object.values(selectedRowMapCopy).reduce((curr, acc) => {
             return acc?.price + curr
         }, 0)
-        dispatch(setGeneric({selectedRowMap: selectedRowMapCopy}))
-        setSelectedRows(Object.values(selectedRowMapCopy))
+        setSearchData(Object.values(menuItemMapperCopy[currentMenuTab]));
         setTotalPrice(totalPrice)
+        dispatch(setGeneric({ menuItemMapper: menuItemMapperCopy }))
+        dispatch(setGeneric({ selectedRowMap: selectedRowMapCopy }))
     }
 
     return (
         <>
             <Table
                 columns={menuColumns}
-                data={selectedRows}
+                data={Object.values(selectedRowMap)}
                 scroll={{
                     y: 300,
                 }}  

@@ -32,7 +32,7 @@ const TableCard = () => {
     const dispatch = useDispatch();
     const modelState = useSelector((state) => state?.models)
     const genericState = useSelector((state) => state?.generic)
-    const { currPath = '/', currentMenuTab = 'pizza', selectedRowMap = {}, selectedTable = {} } = genericState;
+    const { currPath = '/', currentMenuTab = 'pizza', selectedRowMap = {}, selectedTable = {}, menuItemMapper = {} } = genericState;
     const { tableData = [], pizzaItems = [], burgerItems = [], sandwichItems = [], friesItems = [], drinkItems = [] } = modelState;
 
     const [totalPrice, setTotalPrice] = useState(0)
@@ -55,82 +55,17 @@ const TableCard = () => {
                     <Checkbox
                         checked={record?.isSelected}
                         onChange={(e) => {
-                            if (currentMenuTab === 'pizza') {
-                                const newPizzaItems = pizzaItems.map((ins) => {
-                                    if (ins?.id == record?.id) {
-                                        ins.isSelected = !ins.isSelected;
-                                        if (ins.isSelected) {
-                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
-                                        } else {
-                                            let hashMapCopy = { ...selectedRowMap };
-                                            delete hashMapCopy[record.id]
-                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
-                                        }
-                                    }
-                                    return ins;
-                                })
-                                dispatch(setModel('pizzaItems', newPizzaItems))
-                            } else if (currentMenuTab === 'burger') {
-                                const newBurgerItems = burgerItems.map((ins) => {
-                                    if (ins?.id == record?.id) {
-                                        ins.isSelected = !ins.isSelected;
-                                        if (ins.isSelected) {
-                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
-                                        } else {
-                                            let hashMapCopy = { ...selectedRowMap };
-                                            delete hashMapCopy[record.id]
-                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
-                                        }
-                                    }
-                                    return ins;
-                                })
-                                dispatch(setModel('burgerItems', newBurgerItems))
-                            } else if (currentMenuTab === 'sandwich') {
-                                const newSandwichItems = sandwichItems.map((ins) => {
-                                    if (ins?.id == record?.id) {
-                                        ins.isSelected = !ins.isSelected;
-                                        if (ins.isSelected) {
-                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
-                                        } else {
-                                            let hashMapCopy = { ...selectedRowMap };
-                                            delete hashMapCopy[record.id]
-                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
-                                        }
-                                    }
-                                    return ins;
-                                })
-                                dispatch(setModel('sandwichItems', newSandwichItems))
-                            } else if (currentMenuTab === 'fries') {
-                                const newFriesItems = friesItems.map((ins) => {
-                                    if (ins?.id == record?.id) {
-                                        ins.isSelected = !ins.isSelected;
-                                        if (ins.isSelected) {
-                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
-                                        } else {
-                                            let hashMapCopy = { ...selectedRowMap };
-                                            delete hashMapCopy[record.id]
-                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
-                                        }
-                                    }
-                                    return ins;
-                                })
-                                dispatch(setModel('friesItems', newFriesItems))
+                            let menuItemMapperCopy = JSON.parse(JSON.stringify(menuItemMapper))
+                            menuItemMapperCopy[currentMenuTab][record?.id]['isSelected'] = !menuItemMapperCopy[currentMenuTab][record?.id]['isSelected']
+                            if (menuItemMapperCopy[currentMenuTab][record?.id]['isSelected']) {
+                                dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: menuItemMapperCopy[currentMenuTab][record?.id] } }))
                             } else {
-                                const newDrinkItems = drinkItems.map((ins) => {
-                                    if (ins?.id == record?.id) {
-                                        ins.isSelected = !ins.isSelected;
-                                        if (ins.isSelected) {
-                                            dispatch(setGeneric({ selectedRowMap: { ...selectedRowMap, [record['id']]: ins } }))
-                                        } else {
-                                            let hashMapCopy = { ...selectedRowMap };
-                                            delete hashMapCopy[record.id]
-                                            dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
-                                        }
-                                    }
-                                    return ins;
-                                })
-                                dispatch(setModel('drinkItems', newDrinkItems))
+                                let hashMapCopy = JSON.parse(JSON.stringify(selectedRowMap));
+                                delete hashMapCopy[record.id]
+                                dispatch(setGeneric({ selectedRowMap: hashMapCopy }))
                             }
+                            setSearchData(Object.values(menuItemMapperCopy[currentMenuTab]))
+                            dispatch(setGeneric({ menuItemMapper: menuItemMapperCopy }))
                         }}
                     />
                 )
@@ -190,7 +125,7 @@ const TableCard = () => {
                             />
                             <span>{record?.qty}</span>
                             <Button
-                                disabled={record?.isSelected == false}
+                                disabled={record?.isSelected == false || record?.qty == 1}
                                 icon={<MinusOutlined />}
                                 onClick={() => { handleQty('minus', record) }}
                             />
@@ -205,11 +140,11 @@ const TableCard = () => {
         // clean up logic for menu list 
         // selected menu's will be un-selected
         // qty will be set to 1, price
-        if (showTableOrderModal === false) {
+        if (!!searchData.length && showTableOrderModal === false) {
             setSearchData(searchData.filter((ins) => {
                 ins['isSelected'] = false;
                 ins['qty'] = 1
-                ins['price'] = ins?.rate
+                // ins['price'] = ins?.rate
                 return ins;
             }))
             dispatch(setGeneric({ 'selectedRowMap': {} }))
@@ -217,8 +152,8 @@ const TableCard = () => {
     }, [openOrderDrawer, showTableOrderModal])
 
     useEffect(() => {
-        setMenuItemData(pizzaItems);
-        setSearchData(pizzaItems);
+        setMenuItemData(Object.values(menuItemMapper[currentMenuTab]));
+        setSearchData(Object.values(menuItemMapper[currentMenuTab]));
 
         const getTable = async () => {
             setIsLoading(true);
@@ -235,53 +170,20 @@ const TableCard = () => {
 
     const handleQty = (actionType, record) => {
         let count = record?.qty
+        let selectedMenuHM = JSON.parse(JSON.stringify(selectedRowMap));
+        let menuItemMapperCopy  = JSON.parse(JSON.stringify(menuItemMapper));
+
         if (actionType === 'add') {
             count += 1
-        } else if (actionType === 'minus' && count > 0) {
+        } else if (actionType === 'minus') {
+            if (count <= 0) return;
             count -= 1
         }
-
-        if (currentMenuTab === 'pizza') {
-            const newPizzaItems = pizzaItems.map((ins) => {
-                if (ins?.id == record?.id) {
-                    ins['qty'] = count;
-                }
-                return ins;
-            })
-            dispatch(setModel('pizzaItems', newPizzaItems))
-        } else if (currentMenuTab === 'burger') {
-            const newBurgerItems = burgerItems.map((ins) => {
-                if (ins?.id == record?.id) {
-                    ins['qty'] = count;
-                }
-                return ins;
-            })
-            dispatch(setModel('burgerItems', newBurgerItems))
-        } else if (currentMenuTab === 'sandwich') {
-            const newSandwichItems = sandwichItems.map((ins) => {
-                if (ins?.id == record?.id) {
-                    ins['qty'] = count;
-                }
-                return ins;
-            })
-            dispatch(setModel('sandwichItems', newSandwichItems))
-        } else if (currentMenuTab === 'fries') {
-            const newFriesItems = friesItems.map((ins) => {
-                if (ins?.id == record?.id) {
-                    ins['qty'] = count;
-                }
-                return ins;
-            })
-            dispatch(setModel('friesItems', newFriesItems))
-        } else {
-            const newDrinkItems = drinkItems.map((ins) => {
-                if (ins?.id == record?.id) {
-                    ins['qty'] = count;
-                }
-                return ins;
-            })
-            dispatch(setModel('drinkItems', newDrinkItems))
-        }
+        selectedMenuHM[record?.id]['qty'] = count
+        menuItemMapperCopy[currentMenuTab][record?.id]['qty'] = count;
+        dispatch(setGeneric({ selectedRowMap: selectedMenuHM }))
+        dispatch(setGeneric({ menuItemMapper: menuItemMapperCopy}));
+        setSearchData(Object.values(menuItemMapperCopy[currentMenuTab]));
     }
 
     const handleOrderDrawer = () => {
@@ -425,6 +327,7 @@ const TableCard = () => {
                     okText={
                         <div
                             onClick={() => { handleCreateOrder() }}
+                            disabled={true}
                         >
                             Create
                         </div>
@@ -447,8 +350,8 @@ const TableCard = () => {
                                 />
                             </div>
                             <TableOrder
-                                selectedRows={Object.values(selectedRowMap)}
                                 setTotalPrice={setTotalPrice}
+                                setSearchData={setSearchData}
                             />
                         </>
                     }

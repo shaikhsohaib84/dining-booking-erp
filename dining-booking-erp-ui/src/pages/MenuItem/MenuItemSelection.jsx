@@ -15,27 +15,28 @@ export const MenuItemSelection = ({
     const modelState   = useSelector((state) => state?.models)
     const genericState = useSelector((state) => state?.generic)
     const {pizzaItems=[], burgerItems=[], sandwichItems=[], friesItems=[], drinkItems=[]} = modelState;
-    const {currentMenuTab='pizza'} = genericState;    
+    const {currentMenuTab='pizza', menuItemMapper={}} = genericState;    
 
     const menuClick = (key) => {
+        console.log(key)
         dispatch(setGeneric({'currentMenuTab': key}))
-        let currentSelectedData = []
-        if (key == 'pizza') {
-            setMenuItemData(pizzaItems);
-            currentSelectedData = pizzaItems
-        } else if (key == 'burger') {
-            setMenuItemData(burgerItems);
-            currentSelectedData = burgerItems
-        } else if (key == 'sandwich') {
-            setMenuItemData(sandwichItems);
-            currentSelectedData = sandwichItems
-        } else if (key == 'fries') {
-            setMenuItemData(friesItems);
-            currentSelectedData = friesItems
-        } else {
-            setMenuItemData(drinkItems);
-            currentSelectedData = drinkItems
-        }
+        let currentSelectedData = Object.values(menuItemMapper[key])
+        // if (key == 'pizza') {
+        //     setMenuItemData(pizzaItems);
+        //     currentSelectedData = pizzaItems
+        // } else if (key == 'burger') {
+        //     setMenuItemData(burgerItems);
+        //     currentSelectedData = burgerItems
+        // } else if (key == 'sandwich') {
+        //     setMenuItemData(sandwichItems);
+        //     currentSelectedData = sandwichItems
+        // } else if (key == 'fries') {
+        //     setMenuItemData(friesItems);
+        //     currentSelectedData = friesItems
+        // } else {
+        //     setMenuItemData(drinkItems);
+        //     currentSelectedData = drinkItems
+        // }
         setSearchData(currentSelectedData);
     }
     

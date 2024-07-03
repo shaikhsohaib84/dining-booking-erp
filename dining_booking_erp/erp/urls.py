@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
         TableList, TableInsert, TableDelete, TableUpdate,
         AddMenu, ListMenu, UpdateMenu, DeleteMenu,
-        ListCreateOrder, CancelOrder, GetOrderByTableToken,
+        ListCreateOrder, CancelOrder, GetOrderByTableToken, UpdateOrder,
         ListCreateBill,
     )
 
@@ -24,6 +24,7 @@ urlpatterns = [
     path('list-orders/', ListCreateOrder.as_view()),
     path('get-order-by-table-id/', GetOrderByTableToken.as_view()),
     path('cancel-order/<int:pk>/', CancelOrder.as_view()),
+    path('update-order/', UpdateOrder.as_view()),
 
     # billing urls
     path('pay-bill/', ListCreateBill.as_view()),
